@@ -1,0 +1,5060 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=4f84b954-d62f-447a-883f-87671be7800b
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>话说你我</title>
+<link rel="preload" href="fonts/TH-Tshyn-P0.ttf"  as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="fonts/TH-Tshyn-P1.ttf"  as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="fonts/TH-Tshyn-P2.ttf"  as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="fonts/TH-Tshyn-P16.ttf" as="font" type="font/ttf" crossorigin>
+
+<style>
+/* ===== TH 字体（全部完整字体文件，严禁剪字/回退系统字体）===== */
+@font-face { font-family: 'TH-Tshyn-P0';  src: url('fonts/TH-Tshyn-P0.ttf')  format('truetype'); font-display: block; }
+@font-face { font-family: 'TH-Tshyn-P1';  src: url('fonts/TH-Tshyn-P1.ttf')  format('truetype'); font-display: block; }
+@font-face { font-family: 'TH-Tshyn-P2';  src: url('fonts/TH-Tshyn-P2.ttf')  format('truetype'); font-display: block; }
+@font-face { font-family: 'TH-Tshyn-P16'; src: url('fonts/TH-Tshyn-P16.ttf') format('truetype'); font-display: block; }
+@font-face { font-family: 'TH-Times';     src: url('fonts/TH-Times.ttc')    format('truetype'); font-display: swap; }
+
+/* ===== 彩色 Emoji 字体（仅 emoji 码位生效：unicode-range 限定，汉字/拉丁/藏文/箭头符号仍走 TH 字体栈）===== */
+@font-face {
+  font-family: 'EmojiColor';
+  src: local('Apple Color Emoji'), local('Segoe UI Emoji'), local('Noto Color Emoji'), local('Twemoji Mozilla'), local('EmojiOne Color');
+  unicode-range: U+203C, U+2049, U+2122, U+2139, U+2194-2199, U+21A9-21AA, U+231A-231B, U+2328, U+23CF, U+23E9-23FA, U+24C2, U+25AA-25AB, U+25B6, U+25C0, U+25FB-25FE, U+2600-27BF, U+2B00-2BFF, U+FE0F, U+1F000-1FAFF;
+  font-display: swap;
+}
+
+/* ===== 全局变量 ===== */
+:root {
+  --green: #58CC02;
+  --green-dark: #58A700;
+  --green-darker: #4A9001;
+  --green-light: #D7FFB8;
+  --blue: #1CB0F6;
+  --blue-dark: #1899D6;
+  --red: #FF4B4B;
+  --red-dark: #EA2B2B;
+  --orange: #FF9600;
+  --orange-dark: #E08600;
+  --purple: #CE82FF;
+  --purple-dark: #A560E8;
+  --yellow: #FFC800;
+  --yellow-dark: #E0AE00;
+  --bg: #FFFFFF;
+  --bg-gray: #F7F7F7;
+  --text: #3C3C3C;
+  --text-light: #777777;
+  --border: #E5E5E5;
+  --border-dark: #E5E5E5;
+  --shadow: 0 2px 0 rgba(0,0,0,0.05);
+  --radius: 16px;
+  --radius-sm: 12px;
+  /* EmojiColor 仅拦截 emoji 码位（彩色渲染，避免 TH 字体内置单色 emoji 字形）；汉字等其余字符仍纯 TH 字体栈：P0 一级优先，P1/P16/P2 顺序回退，TH-Times 拉丁/数字 */
+  --font-main: 'EmojiColor', 'TH-Tshyn-P0', 'TH-Tshyn-P1', 'TH-Tshyn-P16', 'TH-Tshyn-P2', 'TH-Times';
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--bg-gray);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ===== 手机框架 ===== */
+#app {
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,0,0,0.08);
+}
+
+/* ===== 顶部状态栏 ===== */
+#topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 10px;
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  background: var(--bg);
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.flag-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E5E5E5, #F0F0F0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  border: 3px solid var(--border);
+  position: relative;
+  transition: transform 0.15s;
+}
+.flag-badge:active { transform: scale(0.92); }
+.flag-badge::after {
+  content: '▼';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  font-size: 8px;
+  color: var(--text-light);
+  background: var(--bg);
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border);
+}
+
+.topbar-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.stat-icon { font-size: 20px; }
+.stat-fire { color: var(--orange); }
+.stat-gem { color: var(--blue); }
+.stat-heart { color: var(--red); }
+
+/* ===== 底部导航 ===== */
+#navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 4px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  background: var(--bg);
+  border-top: 2px solid var(--border);
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+  flex: 1;
+  max-width: 90px;
+}
+.nav-item:active { background: var(--bg-gray); }
+.nav-item.active .nav-icon { color: var(--green); }
+.nav-item.active .nav-label { color: var(--green-dark); font-weight: 700; }
+.nav-item:not(.active) .nav-icon { color: #C8C8C8; }
+.nav-item:not(.active) .nav-label { color: #C8C8C8; }
+
+.nav-icon { font-size: 26px; transition: color 0.2s; }
+.nav-label { font-size: 11px; font-weight: 600; transition: color 0.2s; }
+
+/* ===== 屏幕容器 ===== */
+#screens {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+.screen {
+  display: none;
+  min-height: 100%;
+  animation: screenFadeIn 0.25s ease;
+}
+.screen.active { display: block; }
+
+@keyframes screenFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 通用按钮 ===== */
+.duo-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, filter 0.15s;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.duo-btn:active { transform: translateY(1px); }
+.duo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-green {
+  background: var(--green);
+  color: #fff;
+  box-shadow: 0 4px 0 var(--green-dark);
+  border-bottom: 4px solid var(--green-dark);
+}
+.btn-green:active { box-shadow: 0 1px 0 var(--green-dark); border-bottom-width: 1px; }
+
+.btn-blue {
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 4px 0 var(--blue-dark);
+  border-bottom: 4px solid var(--blue-dark);
+}
+.btn-blue:active { box-shadow: 0 1px 0 var(--blue-dark); border-bottom-width: 1px; }
+
+.btn-white {
+  background: #fff;
+  color: var(--text);
+  border: 2px solid var(--border);
+  box-shadow: 0 4px 0 var(--border);
+}
+.btn-white:active { box-shadow: 0 1px 0 var(--border); }
+
+.btn-gray {
+  background: #E5E5E5;
+  color: #AFAFAF;
+  box-shadow: none;
+  border-bottom: 4px solid #D5D5D5;
+  text-transform: none;
+}
+
+.btn-red {
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 4px 0 var(--red-dark);
+  border-bottom: 4px solid var(--red-dark);
+}
+.btn-red:active { box-shadow: 0 1px 0 var(--red-dark); border-bottom-width: 1px; }
+
+/* ===== 学习路径页 ===== */
+.path-container {
+  padding: 16px 0 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.path-section-label {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-light);
+  background: var(--bg-gray);
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin: 20px 0 12px;
+}
+
+.lesson-node {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.15s;
+  margin-bottom: 6px;
+}
+.lesson-node:active .lesson-circle { transform: scale(0.92); }
+
+.lesson-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  position: relative;
+  transition: transform 0.15s;
+  animation: nodeBounce 2s ease-in-out infinite;
+}
+
+.lesson-circle::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 8px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 50%;
+  filter: blur(2px);
+}
+
+@keyframes nodeBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.lesson-circle.active {
+  background: var(--green);
+  box-shadow: 0 6px 0 var(--green-dark);
+  color: #fff;
+}
+.lesson-circle.active .lesson-icon { animation: starSpin 3s linear infinite; }
+
+@keyframes starSpin {
+  0%, 100% { transform: rotate(-5deg) scale(1); }
+  50% { transform: rotate(5deg) scale(1.1); }
+}
+
+.lesson-circle.completed {
+  background: var(--green);
+  box-shadow: 0 6px 0 var(--green-dark);
+  color: #fff;
+}
+
+.lesson-circle.locked {
+  background: #E5E5E5;
+  box-shadow: 0 6px 0 #C8C8C8;
+  color: #B0B0B0;
+}
+
+.lesson-tooltip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -40px;
+  background: var(--text);
+  color: #fff;
+  padding: 5px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.lesson-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--text);
+}
+.lesson-node:hover .lesson-tooltip { opacity: 1; }
+
+/* 路径偏移 */
+.path-offset-left { margin-right: 100px; }
+.path-offset-right { margin-left: 100px; }
+
+/* 路径连接线 */
+.path-connector {
+  width: 4px;
+  height: 28px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #D0D0D0 0,
+    #D0D0D0 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.path-connector.active {
+  background: var(--green);
+}
+
+/* ===== 弹出层 ===== */
+#popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+#popup-overlay.show { display: flex; animation: fadeIn 0.2s; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.popup-card {
+  background: #fff;
+  border-radius: 20px;
+  max-width: 400px;
+  width: 100%;
+  padding: 28px 24px;
+  text-align: center;
+  animation: popupSlide 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popupSlide {
+  from { transform: scale(0.7) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.popup-icon {
+  font-size: 56px;
+  margin-bottom: 12px;
+}
+
+.popup-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--green);
+}
+
+.popup-desc {
+  font-size: 15px;
+  color: var(--text-light);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.popup-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===== 语言选择页 ===== */
+.lang-header {
+  padding: 20px 20px 10px;
+}
+.lang-header h2 {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.lang-header p {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.lang-search {
+  margin: 0 16px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-gray);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+}
+.lang-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+  flex: 1;
+  font-family: inherit;
+}
+
+.lang-categories {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.lang-cat {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 2px solid var(--border);
+  background: #fff;
+  color: var(--text-light);
+  transition: all 0.15s;
+}
+.lang-cat.active {
+  background: var(--green-light);
+  border-color: var(--green);
+  color: var(--green-dark);
+}
+
+.lang-list {
+  padding: 0 16px 30px;
+}
+
+/* ===== 语言选择面板（tab 切换 + 滑动） ===== */
+.lang-tabs {
+  display: flex;
+  margin: 0 16px 0;
+  background: var(--bg-gray);
+  border-radius: 10px;
+  padding: 4px;
+  position: relative;
+}
+.lang-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  position: relative;
+  z-index: 1;
+}
+.lang-tab-icon { font-size: 16px; }
+.lang-tab.active {
+  color: var(--text);
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.lang-panels {
+  position: relative;
+  min-height: 200px;
+  padding: 16px 16px 30px;
+  touch-action: pan-y;
+}
+.lang-panel {
+  display: none;
+  background: var(--bg-gray);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+.lang-panel.active { display: block; }
+.lang-panel-header {
+  padding: 4px 6px 12px;
+  border-bottom: 1.5px dashed var(--border);
+  margin-bottom: 12px;
+}
+.lang-panel-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lang-panel-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 14px;
+  background: var(--green);
+  border-radius: 2px;
+}
+.lang-panel[data-type="language"] .lang-panel-title::before { background: var(--blue); }
+.lang-panel-sub {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 3px;
+  padding-left: 10px;
+}
+.lang-panel .lang-list {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lang-panel .lang-item {
+  margin-bottom: 0;
+  padding: 12px;
+  gap: 10px;
+}
+.lang-panel .lang-flag {
+  font-size: 28px;
+  width: 40px;
+  height: 40px;
+}
+.lang-panel .lang-name { font-size: 15px; }
+.lang-panel .lang-sub { font-size: 11px; }
+.lang-panel .lang-add-btn { margin-top: 4px; padding: 12px; font-size: 14px; }
+.lang-panel .lang-add-icon { font-size: 20px; width: 28px; height: 28px; }
+.lang-panel .lang-badge { font-size: 10px; padding: 3px 8px; }
+.lang-panel .lang-delete { width: 28px; height: 28px; font-size: 16px; }
+.lang-empty {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-light);
+  padding: 16px 0;
+  font-style: italic;
+  opacity: 0.6;
+}
+
+.lang-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fff;
+}
+.lang-item:active { background: var(--bg-gray); transform: scale(0.98); }
+.lang-item.selected { border-color: var(--green); background: var(--green-light); }
+
+.lang-flag {
+  font-size: 36px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--bg-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lang-info { flex: 1; }
+.lang-name { font-size: 16px; font-weight: 700; }
+.lang-sub { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+
+.lang-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+.lang-badge.new { background: var(--green-light); color: var(--green-dark); }
+.lang-badge.soon { background: #F0F0F0; color: #999; }
+.lang-badge.beta { background: #FFF3E0; color: var(--orange-dark); }
+.beta-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: #FFF3E0; color: var(--orange-dark); vertical-align: middle; margin-left: 4px; }
+
+/* 删除语言按钮 */
+.lang-delete {
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: transparent; color: var(--text-light); font-size: 18px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.15s;
+}
+.lang-delete:active { background: #FFE0E0; color: var(--red); transform: scale(0.9); }
+
+/* 新增语言按钮 */
+.lang-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  border: 2px dashed var(--blue);
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--blue-dark);
+  font-weight: 700;
+  font-size: 15px;
+}
+.lang-add-btn:active { background: #E8F7FF; transform: scale(0.98); }
+.lang-add-icon {
+  font-size: 24px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* 新增语言弹窗列表 */
+.add-lang-popup {
+  text-align: left;
+}
+.add-lang-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 16px 0 8px;
+}
+.add-lang-section-title:first-child { margin-top: 0; }
+.add-lang-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.add-lang-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-light);
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.add-lang-chip:active { transform: scale(0.95); }
+.add-lang-chip .chip-soon {
+  font-size: 10px;
+  color: #BBB;
+  background: #F5F5F5;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* ===== 编辑资料弹窗 ===== */
+.edit-profile-popup { text-align: left; }
+.edit-section-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.avatar-option {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--bg-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.15s;
+}
+.avatar-option:active { transform: scale(0.88); }
+.avatar-option.selected {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+.edit-name-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-bottom: 4px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.edit-name-input:focus {
+  border-color: var(--blue);
+  border-bottom-color: var(--blue-dark);
+}
+
+/* ===== 课程练习页 ===== */
+#screen-lesson {
+  display: none;
+  position: fixed;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  background: var(--bg);
+  z-index: 150;
+  flex-direction: column;
+  font-family: var(--font-main);
+}
+#screen-lesson.active {
+  display: flex;
+  animation: lessonSlideIn 0.3s ease;
+}
+
+@keyframes lessonSlideIn {
+  from { transform: translateX(100%) translateX(-50%); opacity: 0.5; }
+  to { transform: translateX(0) translateX(-50%); opacity: 1; }
+}
+
+.lesson-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+  flex-shrink: 0;
+}
+
+.lesson-close {
+  font-size: 22px;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 4px;
+}
+.lesson-close:active { color: var(--red); }
+
+.lesson-progress-bar {
+  flex: 1;
+  height: 16px;
+  background: var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.lesson-progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 8px;
+  position: relative;
+  transition: width 0.5s ease;
+}
+.lesson-progress-fill::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 20px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+  border-radius: 0 8px 8px 0;
+}
+
+.lesson-hearts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--red);
+}
+
+.lesson-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.exercise-prompt {
+  font-family: var(--font-main);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+.new-vocab-tag {
+  display: inline-block; font-size: 12px; font-weight: 700;
+  color: var(--blue); background: #E8F7FF; padding: 2px 8px;
+  border-radius: 10px; vertical-align: middle; margin-left: 4px;
+}
+.review-banner {
+  display: inline-block; font-size: 12px; font-weight: 700;
+  color: var(--orange, #FF9600); background: #FFF4E6; padding: 2px 8px;
+  border-radius: 10px; margin-bottom: 8px;
+}
+
+.exercise-speaker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.speaker-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.speaker-lang-label {
+  font-size: 12px;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+/* 选项卡片 */
+.choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.choice-card {
+  border: 2px solid var(--border);
+  border-bottom: 4px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fff;
+  text-align: center;
+}
+.choice-card:active { transform: scale(0.97); }
+.choice-card.selected {
+  border-color: var(--blue);
+  border-bottom-color: var(--blue-dark);
+  background: #E8F7FF;
+  color: var(--blue-dark);
+}
+.choice-card.correct {
+  border-color: var(--green);
+  border-bottom-color: var(--green-dark);
+  background: var(--green-light);
+  color: var(--green-dark);
+}
+.choice-card.wrong {
+  border-color: var(--red);
+  border-bottom-color: var(--red-dark);
+  background: #FFF0F0;
+  color: var(--red-dark);
+}
+
+.choice-img {
+  width: 100%;
+  aspect-ratio: 1.5;
+  border-radius: 8px;
+  background: var(--bg-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.choice-text {
+  font-family: var(--font-main);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* 单列选项 */
+.choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.choice-list .choice-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  padding: 16px;
+}
+.choice-list .choice-key {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-light);
+  width: 24px;
+}
+.choice-list .choice-card.selected .choice-key { color: var(--blue-dark); }
+
+/* 配对题 */
+.match-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.match-card {
+  border: 2px solid var(--border);
+  border-bottom: 4px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.15s;
+  background: #fff;
+}
+.match-card:active { transform: scale(0.96); }
+.match-card.selected {
+  border-color: var(--blue);
+  border-bottom-color: var(--blue-dark);
+  background: #E8F7FF;
+  color: var(--blue-dark);
+}
+.match-card.matched {
+  background: var(--bg-gray);
+  color: #C8C8C8;
+  border-color: var(--bg-gray);
+  border-bottom-color: var(--bg-gray);
+  pointer-events: none;
+}
+
+/* 填空题 */
+.cloze-text {
+  font-size: 20px;
+  line-height: 1.8;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.cloze-blank {
+  display: inline-block;
+  min-width: 80px;
+  border-bottom: 3px solid var(--border);
+  padding: 2px 8px;
+  margin: 0 4px;
+  font-weight: 700;
+  color: var(--blue);
+}
+.cloze-blank.filled { border-bottom-color: var(--blue); }
+
+.word-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+.word-chip {
+  padding: 8px 16px;
+  border: 2px solid var(--border);
+  border-bottom: 4px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.15s;
+}
+.word-chip:active { transform: scale(0.93); }
+.word-chip.used { opacity: 0.3; pointer-events: none; }
+
+/* 听力题 */
+.listen-play {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 4px 0 var(--green-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: #fff;
+  cursor: pointer;
+  margin: 0 auto 24px;
+  transition: transform 0.15s;
+  animation: listenPulse 2s ease-in-out infinite;
+}
+.listen-play:active { transform: scale(0.92); box-shadow: 0 1px 0 var(--green-dark); }
+
+@keyframes listenPulse {
+  0%, 100% { box-shadow: 0 4px 0 var(--green-dark), 0 0 0 0 rgba(88,204,2,0.3); }
+  50% { box-shadow: 0 4px 0 var(--green-dark), 0 0 0 16px rgba(88,204,2,0); }
+}
+
+.listen-slow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+  color: var(--blue);
+  font-weight: 700;
+  font-size: 14px;
+}
+.listen-slow:active { opacity: 0.6; }
+
+/* 练习底部栏 */
+.lesson-footer {
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  border-top: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 80px;
+}
+
+.footer-feedback {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.footer-feedback.correct { color: var(--green-dark); }
+.footer-feedback.wrong { color: var(--red-dark); }
+.feedback-icon { font-size: 24px; }
+
+.footer-btn { min-width: 160px; }
+
+/* 完成页 */
+.lesson-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 20px;
+  text-align: center;
+}
+.complete-icon {
+  font-size: 72px;
+  margin-bottom: 16px;
+  animation: completeBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes completeBounce {
+  0% { transform: scale(0) rotate(-180deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.complete-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--yellow-dark);
+  margin-bottom: 24px;
+}
+.complete-stats {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.complete-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.complete-stat-icon { font-size: 32px; }
+.complete-stat-val { font-size: 22px; font-weight: 800; color: var(--text); }
+.complete-stat-label { font-size: 12px; color: var(--text-light); }
+
+/* ===== 个人档案页 ===== */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px 20px;
+  background: linear-gradient(180deg, var(--bg-gray) 0%, #fff 100%);
+}
+
+.profile-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  margin-bottom: 12px;
+  border: 4px solid #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.profile-name {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.profile-follow-btn {
+  margin-top: 16px;
+  padding: 8px 24px;
+  border: 2px solid var(--blue);
+  border-bottom: 4px solid var(--blue-dark);
+  background: #fff;
+  color: var(--blue-dark);
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.profile-follow-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  margin: 0 16px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 2px solid var(--border);
+}
+
+.stat-box {
+  background: #fff;
+  padding: 18px 14px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.stat-box-icon { font-size: 28px; }
+.stat-box-num { font-size: 22px; font-weight: 800; }
+.stat-box-label { font-size: 12px; color: var(--text-light); font-weight: 600; }
+
+.profile-section {
+  padding: 20px 16px;
+}
+.section-title {
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-light);
+  margin-bottom: 12px;
+}
+
+.achievement-list {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.achievement-card {
+  flex-shrink: 0;
+  width: 120px;
+  border: 2px solid var(--border);
+  border-bottom: 4px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 10px;
+  text-align: center;
+  background: #fff;
+}
+.achievement-card.locked { opacity: 0.5; }
+.ach-icon { font-size: 40px; margin-bottom: 6px; }
+.ach-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.ach-desc { font-size: 11px; color: var(--text-light); line-height: 1.4; }
+
+/* 学习语言列表 */
+.lang-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lang-progress-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+.lp-flag { font-size: 28px; }
+.lp-info { flex: 1; }
+.lp-name { font-size: 14px; font-weight: 700; }
+.lp-bar {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+.lp-bar-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 4px;
+}
+.lp-crown { font-size: 20px; }
+
+/* ===== 排行榜页 ===== */
+.league-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(180deg, #FFF8E1, #fff);
+}
+
+.league-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.league-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--orange-dark);
+}
+
+.league-week {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+.league-info {
+  display: flex;
+  gap: 30px;
+  margin-top: 14px;
+}
+.league-info-item { text-align: center; }
+.league-info-num { font-size: 18px; font-weight: 800; }
+.league-info-label { font-size: 11px; color: var(--text-light); }
+
+.leaderboard-list {
+  padding: 8px 16px 80px;
+}
+
+.lb-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  transition: background 0.15s;
+}
+.lb-item.me {
+  background: var(--green-light);
+  border: 2px solid var(--green);
+}
+.lb-item:not(.me) { border: 2px solid transparent; }
+
+.lb-rank {
+  font-size: 16px;
+  font-weight: 800;
+  width: 28px;
+  text-align: center;
+  color: var(--text-light);
+}
+.lb-rank.top1 { color: #FFD700; }
+.lb-rank.top2 { color: #C0C0C0; }
+.lb-rank.top3 { color: #CD7F32; }
+
+.lb-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.lb-name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+}
+.lb-name.me-tag { color: var(--green-dark); }
+
+.lb-xp {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lb-demote-zone {
+  background: linear-gradient(90deg, transparent, rgba(255,75,75,0.08), transparent);
+  border-top: 2px dashed rgba(255,75,75,0.2);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+/* ===== 商店页 ===== */
+.shop-section {
+  padding: 16px;
+}
+
+.shop-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 2px solid var(--border);
+  border-bottom: 4px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: transform 0.1s;
+  background: #fff;
+}
+.shop-card:active { transform: scale(0.98); }
+
+.shop-icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.shop-icon-heart { background: #FFE0E0; }
+.shop-icon-gem { background: #E0F0FF; }
+.shop-icon-streak { background: #FFF3E0; }
+.shop-icon-timer { background: #F3E5FF; }
+
+.shop-info { flex: 1; }
+.shop-title { font-size: 16px; font-weight: 700; }
+.shop-desc { font-size: 13px; color: var(--text-light); margin-top: 2px; }
+
+.shop-price {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--blue-dark);
+  white-space: nowrap;
+}
+
+.shop-banner {
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  border-radius: var(--radius);
+  padding: 20px;
+  color: #fff;
+  margin-bottom: 16px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.shop-banner::before {
+  content: '';
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 100px; height: 100px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+}
+.shop-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; left: -10px;
+  width: 80px; height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.shop-banner h3 { font-size: 18px; margin-bottom: 6px; position: relative; }
+.shop-banner p { font-size: 13px; opacity: 0.9; position: relative; }
+
+/* ===== 字母表页 ===== */
+.alphabet-page { padding: 20px 16px 40px; }
+.alphabet-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.alphabet-sub { font-size: 14px; color: var(--text-light); margin-bottom: 20px; }
+.alphabet-section { margin-bottom: 28px; }
+.alphabet-section-title {
+  font-size: 15px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--green-dark); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.alphabet-section-title::before {
+  content: ''; width: 4px; height: 18px; background: var(--green);
+  border-radius: 2px;
+}
+.alphabet-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 10px;
+}
+.alphabet-cell {
+  border: 2px solid var(--border); border-bottom: 4px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px 8px; text-align: center;
+  background: #fff; cursor: pointer; transition: all 0.15s;
+}
+.alphabet-cell:active { transform: scale(0.95); }
+.alphabet-cell-letter { font-size: 28px; font-weight: 700; margin-bottom: 4px; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+.alphabet-cell-name { font-size: 11px; color: var(--text-light); }
+.alphabet-tbd {
+  border: 2px dashed var(--border); border-radius: var(--radius-sm);
+  padding: 24px 16px; text-align: center; color: var(--text-light);
+  font-size: 14px; line-height: 1.6;
+}
+
+/* ===== 设置页 ===== */
+.settings-list {
+  padding: 8px 0;
+}
+
+.settings-group-title {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-light);
+  padding: 16px 20px 8px;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--bg-gray);
+  transition: background 0.1s;
+}
+.settings-item:active { background: var(--bg-gray); }
+
+.settings-label {
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.settings-icon { font-size: 20px; width: 24px; text-align: center; }
+
+.settings-value {
+  font-size: 14px;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 开关 */
+.toggle-switch {
+  width: 44px;
+  height: 26px;
+  background: #E5E5E5;
+  border-radius: 13px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle-switch.on { background: var(--green); }
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 20px; height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after { transform: translateX(18px); }
+
+/* ===== Toast 提示 ===== */
+#toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--text);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 300;
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+#toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ===== 底部安全区 ===== */
+.safe-bottom { height: env(safe-area-inset-bottom, 0px); }
+
+/* ===== 滚动条隐藏 ===== */
+#screens::-webkit-scrollbar { display: none; }
+#screens { scrollbar-width: none; }
+
+/* ===== 欢迎/启动动画 ===== */
+.welcome-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--green);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+}
+.welcome-progress-track {
+  width: 200px;
+  height: 6px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 3px;
+  margin-top: 24px;
+  overflow: hidden;
+}
+.welcome-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #fff;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.welcome-overlay.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.welcome-logo {
+  font-size: 48px;
+  font-weight: 900;
+  color: #fff;
+  animation: welcomePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.welcome-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.8);
+  margin-top: 8px;
+  animation: welcomeFade 0.5s ease 0.3s both;
+}
+
+@keyframes welcomePop {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+@keyframes welcomeFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes welcomeOut {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* ===== 课程介绍页 ===== */
+.lesson-intro {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; flex: 1; padding: 30px 24px; text-align: center;
+}
+.lesson-intro-icon {
+  width: 100px; height: 100px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 50px; color: #fff; margin-bottom: 20px;
+  box-shadow: 0 6px 0 var(--green-darker);
+}
+.lesson-intro-chapter {
+  font-size: 13px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text-light); margin-bottom: 6px;
+}
+.lesson-intro-title { font-size: 26px; font-weight: 800; margin-bottom: 16px; }
+.lesson-intro-desc {
+  font-size: 15px; color: var(--text-light); line-height: 1.8;
+  margin-bottom: 30px; max-width: 320px;
+}
+
+/* ===== 音频播放大按钮 ===== */
+.audio-play-big {
+  width: 90px; height: 90px; border-radius: 50%;
+  background: var(--green); box-shadow: 0 5px 0 var(--green-dark);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; color: #fff; cursor: pointer;
+  margin: 20px auto 12px; transition: transform 0.15s;
+  animation: audioPulse 2s ease-in-out infinite;
+}
+.audio-play-big:active { transform: scale(0.92); box-shadow: 0 2px 0 var(--green-dark); }
+@keyframes audioPulse {
+  0%,100% { box-shadow: 0 5px 0 var(--green-dark), 0 0 0 0 rgba(88,204,2,0.3); }
+  50% { box-shadow: 0 5px 0 var(--green-dark), 0 0 0 16px rgba(88,204,2,0); }
+}
+.audio-replay {
+  display: flex; align-items: center; gap: 6px; justify-content: center;
+  margin-bottom: 20px; cursor: pointer; color: var(--blue);
+  font-weight: 700; font-size: 14px;
+}
+.audio-replay:active { opacity: 0.6; }
+
+/* 音频选项卡片 */
+.audio-opt-list { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.audio-opt-card {
+  width: 80px; height: 80px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 3px solid var(--border); cursor: pointer; background: #fff;
+  transition: all 0.15s; font-size: 32px;
+}
+.audio-opt-card:active { transform: scale(0.92); }
+.audio-opt-card.selected { border-color: var(--blue); background: #E8F7FF; color: var(--blue); }
+.audio-opt-card.correct { border-color: var(--green); background: var(--green-light); color: var(--green-dark); }
+.audio-opt-card.wrong { border-color: var(--red); background: #FFF0F0; color: var(--red-dark); }
+.audio-opt-icon { line-height: 1; }
+.audio-opt-card.selected .audio-opt-icon { }
+
+/* 文字+音频选项 */
+.ta-opt {
+  display: flex; align-items: center; gap: 12px; padding: 16px;
+  border: 2px solid var(--border); border-bottom: 4px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer; background: #fff;
+  transition: all 0.15s; margin-bottom: 10px;
+}
+.ta-opt:active { transform: scale(0.97); }
+.ta-opt.selected { border-color: var(--blue); border-bottom-color: var(--blue-dark); background: #E8F7FF; color: var(--blue-dark); }
+.ta-opt.correct { border-color: var(--green); border-bottom-color: var(--green-dark); background: var(--green-light); color: var(--green-dark); }
+.ta-opt.wrong { border-color: var(--red); border-bottom-color: var(--red-dark); background: #FFF0F0; color: var(--red-dark); }
+.ta-opt-key { font-size: 13px; font-weight: 700; color: var(--text-light); width: 24px; }
+.ta-opt-text { flex: 1; font-size: 22px; font-weight: 700; font-family: var(--font-main); }
+.ta-opt-play { font-size: 22px; color: var(--blue); padding: 4px 8px; }
+/* 排序题：已选选项 */
+.ta-opt.order-used { opacity: 0.4; pointer-events: none; }
+
+/* 展示文字 */
+.display-text {
+  font-family: var(--font-main);
+  font-size: 36px; font-weight: 800; text-align: center;
+  margin: 20px 0 24px; padding: 24px; background: var(--bg-gray);
+  border-radius: var(--radius);
+}
+
+/* ===== 翻译拼字题 ===== */
+.trans-sentence {
+  font-family: var(--font-main);
+  font-size: 24px; font-weight: 700; text-align: center;
+  line-height: 2.2; margin-bottom: 12px; padding: 16px 12px;
+}
+.hint-word {
+  font-family: var(--font-main);
+  position: relative; display: inline; color: var(--blue); border-bottom: 2px dotted var(--blue);
+  cursor: pointer; padding: 0 2px;
+}
+.hint-word:active { opacity: 0.7; }
+.hint-word.activated { color: var(--green-dark); border-bottom-color: var(--green); }
+.hint-tooltip {
+  display: none; position: absolute; top: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%);
+  background: var(--green); color: #fff; padding: 6px 14px;
+  border-radius: 10px; font-size: 15px; font-weight: 700; white-space: nowrap;
+  z-index: 20; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.hint-tooltip::after {
+  content: ''; position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent; border-bottom-color: var(--green);
+}
+.hint-word.activated .hint-tooltip { display: block; }
+.hint-tooltip-line { display: block; }
+.hint-tooltip-line + .hint-tooltip-line { margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.4); }
+.small-char { font-size: 0.33em; font-family: var(--font-main); }
+.trans-audio-row { display: flex; justify-content: center; margin-bottom: 16px; }
+.trans-audio-btn {
+  display: flex; align-items: center; gap: 6px; padding: 8px 16px;
+  border: 2px solid var(--border); border-bottom: 4px solid var(--border);
+  border-radius: 20px; background: #fff; cursor: pointer;
+  font-size: 14px; font-weight: 700; color: var(--blue);
+}
+.trans-audio-btn:active { transform: scale(0.95); }
+.answer-area {
+  min-height: 56px; border: 2px dashed var(--border); border-radius: var(--radius-sm);
+  padding: 8px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  margin-bottom: 16px; background: #FAFAFA; overflow: visible; flex-shrink: 0;
+}
+.answer-area.has-content { border-style: solid; border-color: var(--blue); background: #F0F8FF; }
+.answer-placeholder { width: 100%; text-align: center; font-size: 14px; color: #CCC; }
+.answer-block {
+  font-family: var(--font-main);
+  padding: 10px 16px; border: 2px solid var(--green); border-bottom: 4px solid var(--green-dark);
+  border-radius: var(--radius-sm); font-size: 18px; font-weight: 700; cursor: pointer;
+  background: var(--green-light); color: var(--green-dark);
+  transition: all 0.15s; animation: blockPop 0.2s ease;
+  max-width: 100%; word-break: break-word; overflow-wrap: break-word;
+}
+.answer-block:active { transform: scale(0.93); }
+@keyframes blockPop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.word-bank-2 { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.bank-block {
+  font-family: var(--font-main);
+  padding: 10px 16px; border: 2px solid var(--border); border-bottom: 4px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 18px; font-weight: 700; cursor: pointer;
+  background: #fff; transition: all 0.15s;
+  max-width: 100%; word-break: break-word; overflow-wrap: break-word;
+}
+.bank-block:active { transform: scale(0.93); }
+.bank-block.used { opacity: 0.3; pointer-events: none; }
+
+/* ===== 填空输入题 ===== */
+.fill-blank-sentence {
+  font-family: var(--font-main);
+  font-size: 22px; font-weight: 700; text-align: center;
+  line-height: 2.4; margin-bottom: 20px; padding: 20px 12px;
+}
+.fill-blank-input {
+  font-family: var(--font-main);
+  font-size: 20px; font-weight: 700;
+  padding: 6px 12px; margin: 0 6px;
+  border: none; border-bottom: 3px solid var(--blue);
+  background: transparent; outline: none; text-align: center;
+  width: 4em; max-width: 30vw;
+  color: var(--blue-dark);
+  border-radius: 0;
+}
+.fill-blank-input:focus {
+  border-bottom-color: var(--green);
+}
+
+
+/* ===== 羌语图片 ===== */
+.qiang-img { vertical-align: middle; }
+.qiang-img-inline { height: 1em; }
+.qiang-letter-display {
+  display: flex; justify-content: center; align-items: center;
+  padding: 16px 16px; margin: 0 0 16px;
+}
+.qiang-letter-display .qiang-img { height: 64px; cursor: pointer; }
+.qiang-letter-tap-hint { text-align: center; font-size: 13px; color: var(--text-light); margin-top: 8px; }
+
+/* ===== 藏文字母显示 ===== */
+.tibetan-letter-display {
+  display: flex; justify-content: center; align-items: center;
+  padding: 20px 16px; margin: 0 0 16px;
+  font-size: 72px; line-height: 1.2;
+  font-family: var(--font-main);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ===== 羌语选项 ===== */
+.qiang-choice-list { display: flex; flex-direction: column; gap: 10px; }
+.qiang-choice-card {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  border: 2px solid var(--border); border-bottom: 4px solid var(--border);
+  border-radius: var(--radius-sm); background: #fff; cursor: pointer; transition: all 0.15s;
+}
+.qiang-choice-card:active { transform: scale(0.98); }
+.qiang-choice-card.selected { border-color: var(--blue); border-bottom-color: var(--blue-dark); background: #E8F7FF; }
+.qiang-choice-card.selected.correct { border-color: var(--green); border-bottom-color: var(--green-dark); background: var(--green-light); }
+.qiang-choice-card.selected.wrong { border-color: var(--red); border-bottom-color: var(--red-dark); background: #FFF0F0; }
+.qiang-choice-key {
+  width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: var(--text-light); flex-shrink: 0;
+}
+.qiang-choice-card.selected .qiang-choice-key { border-color: var(--blue); color: var(--blue-dark); background: #E8F7FF; }
+.qiang-choice-card.selected.correct .qiang-choice-key { border-color: var(--green); color: var(--green-dark); background: var(--green-light); }
+.qiang-choice-card.selected.wrong .qiang-choice-key { border-color: var(--red); color: var(--red-dark); background: #FFF0F0; }
+.qiang-choice-text { font-size: 20px; font-weight: 700; font-family: var(--font-main); min-width: 0; overflow-wrap: break-word; }
+.qiang-choice-img { display: flex; align-items: center; justify-content: center; min-height: 40px; }
+.qiang-choice-img .qiang-img { height: 36px; }
+
+/* ===== 移动端响应式适配 ===== */
+@media (max-width: 480px) {
+  .lesson-body { padding: 14px; }
+  .exercise-prompt { font-size: 16px; margin-bottom: 14px; }
+  .answer-area { padding: 6px; gap: 6px; min-height: 48px; flex-shrink: 0; }
+  .word-bank-2 { gap: 6px; }
+  .answer-block, .bank-block { font-size: 16px; padding: 8px 12px; }
+  .qiang-choice-card { padding: 12px; gap: 10px; }
+  .qiang-choice-text { font-size: 18px; }
+  .qiang-choice-key { width: 28px; height: 28px; font-size: 13px; }
+  .tibetan-letter-display { font-size: 56px; }
+  .audio-play-big { width: 76px; height: 76px; font-size: 34px; }
+}
+</style>
+</head>
+<body>
+
+<div class="welcome-overlay" id="welcome">
+  <div class="welcome-logo">话说你我</div>
+  <div class="welcome-sub">让语言活起来！</div>
+  <div class="welcome-progress-track">
+    <div class="welcome-progress-fill" id="welcome-progress-fill"></div>
+  </div>
+  <div class="welcome-sub" id="welcome-status" style="margin-top: 12px; opacity: 0.7; font-size: 12px;">正在初始化…</div>
+</div>
+
+<div id="app">
+  <!-- ===== 顶部状态栏 ===== -->
+  <div id="topbar">
+    <div class="topbar-left" onclick="showScreen('language')">
+      <div class="flag-badge" id="topbar-flag">定</div>
+    </div>
+    <div class="topbar-stats">
+      <div class="stat-item" onclick="showScreen('profile')">
+        <span class="stat-icon stat-fire">🔥</span>
+        <span>1</span>
+      </div>
+      <div class="stat-item" onclick="showScreen('shop')">
+        <span class="stat-icon stat-gem">💎</span>
+        <span>0</span>
+      </div>
+      <div class="stat-item" onclick="showScreen('shop')">
+        <span class="stat-icon stat-heart">❤️</span>
+        <span>5</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 屏幕容器 ===== -->
+  <div id="screens">
+
+    <!-- ===== 首页：学习路径 ===== -->
+    <div class="screen active" id="screen-home">
+      <div class="path-container" id="path-container"></div>
+    </div>
+
+    <div class="screen" id="screen-language">
+      <div class="lang-header">
+        <h2>我的语言</h2>
+        <p>当前正在学习的方言 / 语言</p>
+      </div>
+
+      <!-- 面板切换 tab -->
+      <div class="lang-tabs">
+        <button class="lang-tab active" data-tab="dialect" onclick="switchLangPanel('dialect')">
+          <span class="lang-tab-icon">🗣️</span>汉语方言
+        </button>
+        <button class="lang-tab" data-tab="language" onclick="switchLangPanel('language')">
+          <span class="lang-tab-icon">🌐</span>民族语言
+        </button>
+        <div class="lang-tab-indicator"></div>
+      </div>
+
+      <!-- 面板容器（可滑动切换） -->
+      <div class="lang-panels" id="lang-panels-container">
+        <div class="lang-panel active" data-type="dialect" id="lang-panel-dialect">
+          <div class="lang-panel-header">
+            <div class="lang-panel-title">汉语方言</div>
+            <div class="lang-panel-sub">汉语族下的不同方言</div>
+          </div>
+          <div class="lang-list" id="lang-list-dialect">
+            <!-- 动态渲染 -->
+          </div>
+        </div>
+        <div class="lang-panel" data-type="language" id="lang-panel-language">
+          <div class="lang-panel-header">
+            <div class="lang-panel-title">民族语言</div>
+            <div class="lang-panel-sub">少数民族使用的语言</div>
+          </div>
+          <div class="lang-list" id="lang-list-language">
+            <!-- 动态渲染 -->
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 30px 20px; text-align: center;">
+        <div style="font-size: 13px; color: var(--text-light); line-height: 1.8;">
+          更多方言与少数民族语言<br>正在筹备中，敬请期待
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 个人档案页 ===== -->
+    <div class="screen" id="screen-profile">
+      <div class="profile-header">
+        <div class="profile-avatar">🐼</div>
+        <div class="profile-name">方言爱好者</div>
+        <div class="profile-follow-btn" onclick="editProfile()">编辑资料</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-box-icon">🔥</div>
+          <div class="stat-box-num">1</div>
+          <div class="stat-box-label">连续天数</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-icon">⚡</div>
+          <div class="stat-box-num">0</div>
+          <div class="stat-box-label">总经验值</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-icon">🏆</div>
+          <div class="stat-box-num">0</div>
+          <div class="stat-box-label">皇冠数</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-icon">💎</div>
+          <div class="stat-box-num">0</div>
+          <div class="stat-box-label">宝石</div>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="section-title">学习中的语言</div>
+        <div class="lang-progress-list" id="profile-lang-list">
+          <!-- 动态渲染 -->
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="section-title">成就</div>
+        <div class="achievement-list">
+          <div class="achievement-card locked">
+            <div class="ach-icon">🔥</div>
+            <div class="ach-name">初露锋芒</div>
+            <div class="ach-desc">连续学习 3 天</div>
+          </div>
+          <div class="achievement-card locked">
+            <div class="ach-icon">📚</div>
+            <div class="ach-name">好学之人</div>
+            <div class="ach-desc">完成 10 节课</div>
+          </div>
+          <div class="achievement-card locked">
+            <div class="ach-icon">🎯</div>
+            <div class="ach-name">百发百中</div>
+            <div class="ach-desc">连续答对 20 题</div>
+          </div>
+          <div class="achievement-card locked">
+            <div class="ach-icon">👑</div>
+            <div class="ach-name">语言大师</div>
+            <div class="ach-desc">获得 5 个皇冠</div>
+          </div>
+          <div class="achievement-card locked">
+            <div class="ach-icon">🌟</div>
+            <div class="ach-name">方言通</div>
+            <div class="ach-desc">学习 3 种方言</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="section-title">每月统计</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <div style="flex:1; min-width: 100px; background: var(--bg-gray); border-radius: 12px; padding: 14px; text-align: center;">
+            <div id="stat-monthly-lessons" style="font-size: 22px; font-weight: 800; color: var(--green-dark);">0</div>
+            <div style="font-size: 12px; color: var(--text-light);">本月课程</div>
+          </div>
+          <div style="flex:1; min-width: 100px; background: var(--bg-gray); border-radius: 12px; padding: 14px; text-align: center;">
+            <div id="stat-monthly-xp" style="font-size: 22px; font-weight: 800; color: var(--blue-dark);">0</div>
+            <div style="font-size: 12px; color: var(--text-light);">本月 XP</div>
+          </div>
+          <div style="flex:1; min-width: 100px; background: var(--bg-gray); border-radius: 12px; padding: 14px; text-align: center;">
+            <div id="stat-accuracy" style="font-size: 22px; font-weight: 800; color: var(--orange-dark);">—</div>
+            <div style="font-size: 12px; color: var(--text-light);">正确率</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height: 30px;"></div>
+    </div>
+
+    <!-- ===== 字母表页 ===== -->
+    <div class="screen" id="screen-alphabet">
+      <div id="alphabet-content">
+        <!-- 动态渲染 -->
+      </div>
+    </div>
+
+    <!-- ===== 商店页 ===== -->
+    <div class="screen" id="screen-shop">
+      <div class="shop-section">
+        <div class="shop-banner">
+          <h3>💎 宝石商店</h3>
+          <p>用宝石兑换道具，助力学习之旅</p>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #58cc02, #46a302); color: #fff; border-radius: 16px; padding: 16px; margin-bottom: 16px; text-align: center;">
+          <div style="font-size: 16px; font-weight: 800; margin-bottom: 4px;">🎁 新用户福利</div>
+          <div style="font-size: 13px; opacity: 0.9;">已赠送 1000 💎，用于补充生命和体验功能</div>
+        </div>
+
+        <div class="shop-card" onclick="shopBuy('hearts')">
+          <div class="shop-icon-box shop-icon-heart">❤️</div>
+          <div class="shop-info">
+            <div class="shop-title">补充生命</div>
+            <div class="shop-desc">立即恢复全部 5 颗心</div>
+          </div>
+          <div class="shop-price">💎 350</div>
+        </div>
+
+        <div class="shop-card" onclick="shopBuy('freeze')">
+          <div class="shop-icon-box shop-icon-streak">🧊</div>
+          <div class="shop-info">
+            <div class="shop-title">连续天数冻结</div>
+            <div class="shop-desc">跳过一天不中断连续记录</div>
+          </div>
+          <div class="shop-price">待开发</div>
+        </div>
+
+        <div class="shop-card" onclick="shopBuy('timer')">
+          <div class="shop-icon-box shop-icon-timer">⏱️</div>
+          <div class="shop-info">
+            <div class="shop-title">计时挑战</div>
+            <div class="shop-desc">30 秒内答对越多奖励越多</div>
+          </div>
+          <div class="shop-price">待开发</div>
+        </div>
+
+        <div class="shop-card" onclick="shopBuy('gems')">
+          <div class="shop-icon-box shop-icon-gem">💰</div>
+          <div class="shop-info">
+            <div class="shop-title">充值宝石</div>
+            <div class="shop-desc">获取更多宝石购买道具</div>
+          </div>
+          <div class="shop-price">待开发</div>
+        </div>
+      </div>
+
+      <div class="shop-section" style="padding-top: 0;">
+        <div class="section-title" style="padding: 0 0 12px;">每日任务</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border: 2px solid var(--border); border-radius: 12px;">
+            <span style="font-size: 24px;">🎯</span>
+            <div style="flex: 1;">
+              <div style="font-weight: 700; font-size: 14px;">赚取 50 XP</div>
+              <div style="height: 8px; background: var(--border); border-radius: 4px; margin-top: 6px; overflow: hidden;">
+                <div id="task-xp-bar" style="height: 100%; width: 0%; background: var(--green); border-radius: 4px;"></div>
+              </div>
+            </div>
+            <span id="task-xp-text" style="font-size: 12px; color: var(--text-light); font-weight: 700;">0/50</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border: 2px solid var(--border); border-radius: 12px;">
+            <span style="font-size: 24px;">📚</span>
+            <div style="flex: 1;">
+              <div style="font-weight: 700; font-size: 14px;">完成 3 节课</div>
+              <div style="height: 8px; background: var(--border); border-radius: 4px; margin-top: 6px; overflow: hidden;">
+                <div id="task-lesson-bar" style="height: 100%; width: 0%; background: var(--blue); border-radius: 4px;"></div>
+              </div>
+            </div>
+            <span id="task-lesson-text" style="font-size: 12px; color: var(--text-light); font-weight: 700;">0/3</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="height: 30px;"></div>
+    </div>
+
+    <!-- ===== 设置页 ===== -->
+    <div class="screen" id="screen-settings">
+      <div style="padding: 20px 20px 10px;">
+        <h2 style="font-size: 22px; font-weight: 800;">设置</h2>
+      </div>
+
+      <div class="settings-list">
+        <div class="settings-group-title">学习</div>
+        <div class="settings-item" onclick="showScreen('language')">
+          <div class="settings-label"><span class="settings-icon">🗣️</span> 学习语言</div>
+          <div class="settings-value" id="settings-current-lang">定州话 ›</div>
+        </div>
+        <div class="settings-item" onclick="toggleSetting(this)">
+          <div class="settings-label"><span class="settings-icon">🔊</span> 发音提示</div>
+          <div class="toggle-switch on" data-key="sound"></div>
+        </div>
+        <div class="settings-item" onclick="toggleSetting(this)">
+          <div class="settings-label"><span class="settings-icon">💬</span> 繁体字显示</div>
+          <div class="toggle-switch" data-key="traditional"></div>
+        </div>
+
+        <div class="settings-group-title">进度</div>
+        <div class="settings-item" onclick="toast('功能开发中')">
+          <div class="settings-label"><span class="settings-icon">📊</span> 学习统计</div>
+          <div class="settings-value">›</div>
+        </div>
+        <div class="settings-item" onclick="resetProgress()">
+          <div class="settings-label"><span class="settings-icon">🔄</span> 重置进度</div>
+          <div class="settings-value">›</div>
+        </div>
+
+        <div class="settings-group-title">通用</div>
+        <div class="settings-item" onclick="toast('功能开发中')">
+          <div class="settings-label"><span class="settings-icon">🔔</span> 通知</div>
+          <div class="settings-value">›</div>
+        </div>
+        <div class="settings-item" onclick="toast('功能开发中')">
+          <div class="settings-label"><span class="settings-icon">🌙</span> 深色模式</div>
+          <div class="toggle-switch" data-key="dark"></div>
+        </div>
+        <div class="settings-item" onclick="toast('功能开发中')">
+          <div class="settings-label"><span class="settings-icon">ℹ️</span> 关于话说你我</div>
+          <div class="settings-value">v0.1.0 ›</div>
+        </div>
+        <div class="settings-item" onclick="toast('功能开发中')">
+          <div class="settings-label"><span class="settings-icon">📤</span> 分享给朋友</div>
+          <div class="settings-value">›</div>
+        </div>
+      </div>
+      <div style="height: 20px;"></div>
+    </div>
+  </div>
+
+  <!-- ===== 课程练习全屏 ===== -->
+  <div id="screen-lesson">
+    <div class="lesson-topbar">
+      <div class="lesson-close" onclick="exitLesson()">✕</div>
+      <div class="lesson-progress-bar">
+        <div class="lesson-progress-fill" id="lesson-progress" style="width: 0%;"></div>
+      </div>
+      <div class="lesson-hearts">❤️ <span id="lesson-hearts-count">5</span></div>
+    </div>
+
+    <div class="lesson-body" id="lesson-body">
+      <!-- 练习内容动态填充 -->
+    </div>
+
+    <div class="lesson-footer" id="lesson-footer">
+      <div class="footer-feedback" id="footer-feedback" style="visibility: hidden;">
+        <span class="feedback-icon">✅</span>
+        <span>太棒了！</span>
+      </div>
+      <button class="duo-btn btn-gray footer-btn" id="lesson-check-btn" onclick="checkAnswer()">检查</button>
+    </div>
+  </div>
+
+  <!-- ===== 底部导航 ===== -->
+  <div id="navbar">
+    <div class="nav-item active" data-screen="home" onclick="showScreen('home')">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">学习</div>
+    </div>
+    <div class="nav-item" id="nav-alphabet" data-screen="alphabet" onclick="showScreen('alphabet')" style="display:none;">
+      <div class="nav-icon">🔤</div>
+      <div class="nav-label">字母表</div>
+    </div>
+    <div class="nav-item" data-screen="shop" onclick="showScreen('shop')">
+      <div class="nav-icon">🛒</div>
+      <div class="nav-label">商店</div>
+    </div>
+    <div class="nav-item" data-screen="profile" onclick="showScreen('profile')">
+      <div class="nav-icon">👤</div>
+      <div class="nav-label">档案</div>
+    </div>
+    <div class="nav-item" data-screen="settings" onclick="showScreen('settings')">
+      <div class="nav-icon">⚙️</div>
+      <div class="nav-label">设置</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 弹出层 ===== -->
+<div id="popup-overlay">
+  <div class="popup-card" id="popup-card">
+    <!-- 动态填充 -->
+  </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div id="toast"></div>
+
+<!-- OpenCC-js 简繁转换库 -->
+<script async src="https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.min.js"></script>
+
+<script>
+/* ===== 全局状态 ===== */
+var currentScreen = 'home';
+var currentLang = 'dingzhou'; /* 'dingzhou' / 'qiang' / 'tibetan' */
+var lessonProgress = 0;
+var lessonHearts = 5;
+var lessonTotalSteps = 5;
+var currentStep = 0;
+var selectedAnswer = null;
+var exerciseType = 'choice';
+var matchedPairs = 0;
+var totalPairs = 0;
+var selectedMatch = null;
+var answerLocked = false;
+var currentLessonReward = { xp: 0, gems: 0, isRepeat: false };
+
+/* ===== 用户数据（实际情况） ===== */
+var userData = {
+  streak: 1,
+  xp: 0,
+  gems: 1000,
+  hearts: 5,
+  lessonsCompleted: 0,
+  totalCorrect: 0,
+  totalWrong: 0,
+  monthlyLessons: 0,
+  monthlyXP: 0,
+  dailyXP: 0,
+  dailyLessons: 0,
+  lastActiveDate: null
+};
+var soundEnabled = true;
+
+/* ===== 课程状态 ===== */
+var currentLessonId = null;
+var currentExercises = [];
+var completedLessons = {};
+var translationAnswer = [];
+var translationBlockState = [];
+var currentHints = [];
+var reviewQueue = [];
+var inReview = false;
+var originalLength = 0;
+var wrongCount = 0;
+var totalCompleted = 0;
+
+/* ===== 个人资料状态 ===== */
+var profileName = '方言爱好者';
+var profileAvatar = '🐼';
+var editingAvatar = '🐼';
+var avatarOptions = ['🐼','🦊','🐰','🐯','🐱','🦉','🐸','🐨','🐵','🦝','🦁','🐻','🐷','🐮','🐔','🐧','🦄','🐲','🦋','🌸','🌟','⚡','🔥','🌈'];
+
+/* ===== 数据持久化（localStorage）===== */
+var STORAGE_KEY = 'huashuo-niwo-v1';
+
+function saveData() {
+  try {
+    var data = {
+      userData: userData,
+      completedLessons: completedLessons,
+      soundEnabled: soundEnabled,
+      traditionalMode: traditionalMode,
+      profileName: profileName,
+      profileAvatar: profileAvatar,
+      currentLang: currentLang,
+      activeLangs: activeLangs
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch(e) {
+    console.warn('数据保存失败:', e);
+  }
+}
+
+function loadData() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    var data = JSON.parse(raw);
+    /* 合并 userData：保留已存值，新字段用默认值填充 */
+     var defaults = {
+      streak: 1, xp: 0, gems: 1000, hearts: 5,
+      lessonsCompleted: 0, totalCorrect: 0, totalWrong: 0,
+      monthlyLessons: 0, monthlyXP: 0, dailyXP: 0, dailyLessons: 0,
+      lastActiveDate: null
+    };
+    if (data.userData) {
+      Object.keys(defaults).forEach(function(k) {
+        if (data.userData[k] !== undefined) {
+          userData[k] = data.userData[k];
+        }
+      });
+    }
+    if (data.completedLessons) completedLessons = data.completedLessons;
+    if (typeof data.soundEnabled === 'boolean') soundEnabled = data.soundEnabled;
+    if (typeof data.traditionalMode === 'boolean') traditionalMode = data.traditionalMode;
+    if (data.profileName) profileName = data.profileName;
+    if (data.profileAvatar) profileAvatar = data.profileAvatar;
+    if (data.currentLang) currentLang = data.currentLang;
+    if (data.activeLangs && Array.isArray(data.activeLangs)) activeLangs = data.activeLangs;
+    return true;
+  } catch(e) {
+    console.warn('数据加载失败:', e);
+    return false;
+  }
+}
+
+/* ===== 繁体字模式 ===== */
+var traditionalMode = false;
+var stConverter = null;
+var tsConverter = null;
+
+function initConverters() {
+  if (typeof OpenCC === 'undefined') return false;
+  if (!stConverter) {
+    var raw = OpenCC.Converter({ from: 'cn', to: 'tw' });
+    stConverter = function(text) {
+      /* 先强制替换特定字，防止 OpenCC 一对多误判 */
+      var r = text;
+      r = r.replace(/着/g, '著');           /* 着→著：一律 */
+      r = r.replace(/龙卷风/g, '龍捲風');    /* 卷→捲 */
+      r = r.replace(/歇困/g, '歇睏');        /* 困→睏 */
+      r = r.replace(/代志/g, '代誌');        /* 志→誌 */
+      /* 保护凊采：OpenCC 会把采误转为採，用占位符暂时隐藏 */
+      r = r.replace(/凊采/g, '\u0001QC\u0001');
+      /* 再调用 OpenCC 转换其余字符（已是繁体的字不会再被改动） */
+      r = raw(r);
+      /* 恢复凊采 */
+      return r.replace(/\u0001QC\u0001/g, '凊采');
+    };
+  }
+  if (!tsConverter) tsConverter = OpenCC.Converter({ from: 'tw', to: 'cn' });
+  return true;
+}
+
+function walkTextNodes(root, fn) {
+  var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+  var nodes = [];
+  var node;
+  while (node = walker.nextNode()) {
+    if (node.textContent.trim()) nodes.push(node);
+  }
+  nodes.forEach(fn);
+}
+
+function applyTraditional() {
+  if (!initConverters()) { toast('繁体转换库加载失败'); return; }
+  var app = document.getElementById('app');
+  walkTextNodes(app, function(node) {
+    node.textContent = stConverter(node.textContent);
+  });
+  // 也转换 input placeholder
+  document.querySelectorAll('input[placeholder]').forEach(function(inp) {
+    inp.setAttribute('data-ph', inp.placeholder);
+    inp.placeholder = stConverter(inp.placeholder);
+  });
+}
+
+function revertSimplified() {
+  if (!initConverters()) return;
+  var app = document.getElementById('app');
+  walkTextNodes(app, function(node) {
+    node.textContent = tsConverter(node.textContent);
+  });
+  document.querySelectorAll('input[placeholder]').forEach(function(inp) {
+    if (inp.getAttribute('data-ph')) {
+      inp.placeholder = inp.getAttribute('data-ph');
+    }
+  });
+}
+
+/* ===== 屏幕切换 ===== */
+function showScreen(name) {
+  document.getElementById('toast').classList.remove('show');
+  document.querySelectorAll('.screen').forEach(function(s) {
+    s.classList.remove('active');
+  });
+  var screen = document.getElementById('screen-' + name);
+  if (screen) screen.classList.add('active');
+  currentScreen = name;
+
+  document.querySelectorAll('.nav-item').forEach(function(n) {
+    n.classList.toggle('active', n.dataset.screen === name);
+  });
+
+  document.getElementById('screens').scrollTop = 0;
+  if (name === 'profile') updateProfile();
+  if (name === 'shop') updateShop();
+  if (name === 'language') renderLangList();
+  if (name === 'alphabet') renderAlphabet();
+}
+
+/* ===== Toast ===== */
+var toastTimer = null;
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); toastTimer = null; }, 2200);
+}
+
+/* ===== 弹出层 ===== */
+function showPopup(icon, title, desc, btns) {
+  var card = document.getElementById('popup-card');
+  var html = '<div class="popup-icon">' + icon + '</div>';
+  html += '<div class="popup-title">' + title + '</div>';
+  html += '<div class="popup-desc">' + desc + '</div>';
+  html += '<div class="popup-btns">';
+  btns.forEach(function(b) {
+    html += '<button class="duo-btn ' + b.class + '" onclick="' + b.action + '">' + b.text + '</button>';
+  });
+  html += '</div>';
+  card.innerHTML = html;
+  document.getElementById('popup-overlay').classList.add('show');
+  if (traditionalMode && initConverters()) {
+    walkTextNodes(card, function(node) { node.textContent = stConverter(node.textContent); });
+  }
+}
+
+function closePopup() {
+  document.getElementById('popup-overlay').classList.remove('show');
+}
+
+/* ===== 锁定课程提示 ===== */
+function lockedLesson() {
+  showPopup('🔒', '课程未解锁', '完成前面的课程即可解锁新内容。\n更多课程敬请期待！', [
+    { text: '知道啦', class: 'btn-green', action: 'closePopup()' }
+  ]);
+}
+
+/* ===== 课程数据 ===== */
+var courses = {
+  'lesson-1': {
+    title: '疑母',
+    chapter: '第一章 入门',
+    icon: '⭐',
+    intro: '定州话比普通话多一个声母，请尝试分辨ŋ声母与n声母和零声母的区别。',
+    exercises: [
+      { type:'audio-choice', audio:'ɑ', prompt:'请听并选择正确答案', options:[
+        {text:'ɑ',correct:true},{text:'nɑ',correct:false},{text:'ŋɑ',correct:false}
+      ]},
+      { type:'audio-choice', audio:'n', prompt:'请听并选择正确答案', options:[
+        {text:'g',correct:false},{text:'n',correct:true},{text:'ŋ',correct:false}
+      ]},
+      { type:'audio-choice', audio:'gɑ', prompt:'请听并选择正确答案', options:[
+        {text:'gɑ',correct:true},{text:'nɑ',correct:false},{text:'ŋɑ',correct:false}
+      ]},
+      { type:'audio-choice', audio:'ŋe', prompt:'请听并选择正确答案', options:[
+        {text:'e',correct:false},{text:'ne',correct:false},{text:'ŋe',correct:true}
+      ]},
+      { type:'text-audio-choice', text:'ŋɑ', prompt:'请选择正确的发音', options:[
+        {text:'ɑ',audio:'ɑ',correct:false},{text:'nɑ',audio:'nɑ',correct:false},{text:'ŋɑ',audio:'ŋɑ',correct:true}
+      ]},
+      { type:'text-audio-choice', text:'na', prompt:'请选择正确的发音', options:[
+        {text:'ɑ',audio:'ɑ',correct:false},{text:'nɑ',audio:'nɑ',correct:true},{text:'ŋɑ',audio:'ŋɑ',correct:false}
+      ]},
+      { type:'text-audio-choice', text:'ŋ', prompt:'请选择正确的发音', options:[
+        {text:'g',audio:'g',correct:false},{text:'n',audio:'n',correct:false},{text:'ŋ',audio:'ŋ',correct:true}
+      ]},
+      { type:'text-audio-choice', text:'ŋɑ nɑ', prompt:'请选择正确的发音', options:[
+        {text:'ŋɑ nɑ',audio:'ŋɑ nɑ',correct:true},{text:'nɑ ŋɑ',audio:'nɑ ŋɑ',correct:false},{text:'ɑ nɑ',audio:'ɑ nɑ',correct:false}
+      ]},
+      { type:'audio-text-audio', audio:'今儿晌午吃大鹅恰', prompt:'请选择音频包含的声母', options:[
+        {text:'n',audio:'n',correct:false},{text:'ŋ',audio:'ŋ',correct:true}
+      ]},
+      { type:'audio-text-audio', audio:'外头有哪些个人儿', prompt:'请选择音频包含的声母', options:[
+        {text:'n',audio:'n',correct:true},{text:'ŋ',audio:'ŋ',correct:false}
+      ]}
+    ]
+  },
+  'lesson-2': {
+    title: '问候与饮食（1）',
+    chapter: '第一章 入门',
+    icon: '🗣️',
+    intro: '学习定州话中日常问候与饮食相关的表达方式。通过方言句子与普通话的对照，掌握定州话的特色用词。',
+    exercises: [
+      { type:'translation', sentence:'吃哩㗑？', sentenceAudio:'吃哩㗑',
+        hints:[{word:'哩',meaning:'了'},{word:'㗑',meaning:'吗'}],
+        blocks:['吃','的','了','吗','呢'], answers:['吃了吗'], blockAudio:false },
+      { type:'translation', sentence:'吃啷？', sentenceAudio:'吃啷',
+        hints:[{word:'啷',meaning:'了呀 / 居然……了吗'}],
+        blocks:['吃','的','了','吗','呢','居然','原来','呀'],
+        answers:['吃了呀','原来吃了吗','居然吃了吗','原来吃了呀','居然吃了呀'], blockAudio:false },
+      { type:'translation', sentence:'吃哩晌午饭哩㗑？', sentenceAudio:'吃哩晌午饭哩㗑',
+        hints:[{word:'哩',meaning:'了'},{word:'晌午饭',meaning:'午饭'},{word:'㗑',meaning:'吗'}],
+        blocks:['吃过','中午','午饭','了','吗','呀'], answers:['吃过午饭了吗'], blockAudio:false },
+      { type:'translation', sentence:'吃唡。', sentenceAudio:'吃唡',
+        hints:[{word:'唡',meaning:'了'}],
+        blocks:['吃','的','了','吗','呢'], answers:['吃了'], blockAudio:false },
+      { type:'translation', sentence:'吃咧呗？', sentenceAudio:'吃咧呗',
+        hints:[{word:'咧',meaning:'了'},{word:'呗',meaning:'吗'}],
+        blocks:['吃','的','了','吗','呢'], answers:['吃了吗'], blockAudio:false },
+      { type:'translation', sentence:'喝米汤来。', sentenceAudio:'喝米汤来',
+        hints:[{word:'米汤',meaning:'粥'},{word:'来',meaning:'来着'}],
+       blocks:['吃','的','喝','米饭','来着','大米粥'], answers:['喝的大米粥','喝大米粥来着'], blockAudio:false },
+      { type:'translation', sentence:'我吃山药菜饭来。', sentenceAudio:'我吃山药菜饭来',
+        hints:[{word:'山药',meaning:'红薯'},{word:'菜饭',meaning:'蔬菜小米粥'},{word:'来',meaning:'来着'}],
+        blocks:['我','吃','喝','的','过','山药','土豆','红薯','大米','小米','蔬菜','粥','来着'],
+        answers:['我吃的红薯小米粥','我吃红薯小米粥来着'], blockAudio:false },
+      { type:'translation', sentence:'你吃卷子呗？', sentenceAudio:'你吃卷子呗',
+        hints:[{word:'卷子',meaning:'馒头'},{word:'呗',meaning:'吗'}],
+        blocks:['你','我','吃','的','花卷','馒头','吗','居然'],
+        answers:['你吃馒头吗'], blockAudio:false },
+      { type:'translation', sentence:'你黑家吃哩嘛耶？', sentenceAudio:'你黑家吃哩嘛耶',
+        hints:[{word:'黑家',meaning:'晚上'},{word:'哩',meaning:'的'},{word:'嘛',meaning:'什么'},{word:'耶',meaning:'呢'}],
+        blocks:['你','今天','早上','中午','晚上','夜晚','吃','的','了','什么','呀','呢'],
+        answers:['你晚上吃的什么','你晚上吃的什么呢','你晚上吃的什么呀','你晚上吃了什么','你晚上吃了什么呀','你晚上吃了什么呢'], blockAudio:false },
+      { type:'translation', sentence:'翻译：你喝大米粥吗？', sentenceAudio:null,
+        hints:[{word:'大米粥',meaning:'米汤'},{word:'吗',meaning:'㗑 / 呗 / 昂'}],
+        blocks:['菜饭','白粥','米汤','你','呗','大米','喝','咉','吃','㗑'],
+        answers:['你喝米汤㗑','你喝米汤呗'], blockAudio:true }
+    ]
+  },
+  'lesson-3': {
+    title: '问候与饮食（2）',
+    chapter: '第一章 入门',
+    icon: '🍚',
+    intro: '继续学习定州话中日常问候与饮食相关的表达方式。掌握更多特色用词和句式。',
+    exercises: [
+      { type:'translation', sentence:'歇着啷？', sentenceAudio:'歇着啷',
+        hints:[{word:'歇',meaning:'休息'},{word:'啷',meaning:'在……呀 / 居然在……吗'}],
+        blocks:['休息','在','吗','居然','呀','着'], answers:['在休息呀','居然在休息吗'], blockAudio:false },
+      { type:'translation', sentence:'忙㗑？', sentenceAudio:'忙㗑',
+        hints:[{word:'㗑',meaning:'吗'}],
+        blocks:['休息','忙','居然','在','呀','呢','吗'], answers:['忙吗'], blockAudio:false },
+      { type:'translation', sentence:'忙哩㗑？', sentenceAudio:'忙哩㗑',
+        hints:[{word:'哩',meaning:'在 / 呢'},{word:'㗑',meaning:'吗'}],
+        blocks:['休息','忙','居然','在','呀','呢','吗'], answers:['在忙吗'], blockAudio:false },
+      { type:'translation', sentence:'道*儿*上蔫点*儿*。', sentenceAudio:'道儿上蔫点儿',
+        hints:[{word:'道*儿*',meaning:'道路'},{word:'蔫点*儿*',meaning:'慢一点 / 注意安全'}],
+        blocks:['慢','注意','精神','安全','萎靡','一点','小心','出行时'],
+        answers:['出行时慢一点','出行时注意安全','出行时小心一点'], blockAudio:false },
+      { type:'translation', sentence:'吃饭吃蔫点*儿*。', sentenceAudio:'吃饭吃蔫点儿',
+        hints:[{word:'蔫',meaning:'慢'}],
+        blocks:['注意','慢','吃饭','吃','安全','小心','萎靡','精神','一点'],
+        answers:['吃饭吃慢一点'], blockAudio:false },
+      { type:'translation', sentence:'我吃咧晌午饭咧。', sentenceAudio:'我吃咧晌午饭咧',
+        hints:[{word:'咧',meaning:'了'},{word:'晌午饭',meaning:'午饭'}],
+        blocks:['我','吃了','午饭','了','中午','的'],
+        answers:['我吃了午饭了','我吃了午饭'], blockAudio:false },
+      { type:'translation', sentence:'黑家吃白粥，沾㗑？', sentenceAudio:'黑家吃白粥，沾㗑',
+        hints:[{word:'黑家',meaning:'晚上'},{word:'白粥',meaning:'玉米粥'},{word:'沾',meaning:'行 / 可以'}],
+        blocks:['晚上','吃','大米粥','可以','吗','行不行','喝','玉米粥'],
+        answers:['晚上吃玉米粥可以吗','晚上吃玉米粥行不行'], blockAudio:false },
+      { type:'translation', sentence:'你喝粥啷？', sentenceAudio:'你喝粥liang',
+        hints:[{word:'粥',meaning:'稠粥'},{word:'𠶛',meaning:'在……呀 / 居然在……吗'}],
+        blocks:['你','在吃','稀粥','在喝','浓粥','呀'], answers:['你在喝浓粥呀'], blockAudio:false },
+      { type:'translation', sentence:'你上哪*儿*迁？', sentenceAudio:'你上哪儿迁',
+        hints:[{word:'上',meaning:'去'},{word:'迁',meaning:'去呀 / 去呢'}],
+        blocks:['你去','哪里','呢'], answers:['你去哪里','你去哪里呢'], blockAudio:false },
+      { type:'translation', sentence:'歇着哩㗑？', sentenceAudio:'歇着哩㗑',
+        hints:[{word:'歇',meaning:'休息'},{word:'哩',meaning:'在 / 呢'},{word:'㗑',meaning:'吗'}],
+        blocks:['忙','休息','的','正在','去往','吗','呀','着','了'],
+        answers:['正在休息吗','正在休息着吗'], blockAudio:false }
+    ]
+  },
+  'lesson-4': {
+    title: '问候与饮食（3）',
+    chapter: '第一章 入门',
+    icon: '🍜',
+    intro: '继续学习定州话的问候与饮食表达，掌握啷、可……哩、愿哩等特色用法。',
+    exercises: [
+      { type:'translation', sentence:'你吃啷？', sentenceAudio:'你吃啷',
+        hints:[{word:'啷',meaning:'了呀 / 居然……了吗'}],
+        blocks:['你','居然','呀','吃了','的呀','吃的','吗'], answers:['你吃了呀','你吃的呀','你居然吃了吗'], blockAudio:false },
+      { type:'translation', sentence:'我可想你哩！', sentenceAudio:'我可想你哩',
+        hints:[{word:'可',meaning:'很 / 非常'},{word:'哩',meaning:'很 / 非常'}],
+        blocks:['我','想你','很','太','非常'], answers:['我很想你','我非常想你'], blockAudio:false },
+      { type:'translation', sentence:'你好吃焖子㗑？', sentenceAudio:'你好吃焖子㗑',
+        hints:[{word:'好',meaning:'喜欢'},{word:'焖子',meaning:'定州焖子'},{word:'㗑',meaning:'吗'}],
+        blocks:['你','吗','喜欢','焖子','定州','爱','吃','淀粉','焖饭','焖面'],
+        answers:['你爱吃焖子吗','你喜欢吃焖子吗','你爱吃定州焖子吗','你喜欢吃定州焖子吗'], blockAudio:false },
+      { type:'translation', sentence:'我不愿哩吃白粥，做点别哩呗？', sentenceAudio:'我不愿哩吃白粥，做点别哩呗',
+        hints:[{word:'愿哩',meaning:'想 / 愿意'},{word:'白粥',meaning:'玉米粥'},{word:'别哩',meaning:'其他的'},{word:'呗',meaning:'吧'}],
+        blocks:['我','不想','不愿意','吃','其他','的','玉米粥','大米粥','做','如何','其他的','饭菜'],
+        answers:['我不想吃玉米粥做其他的如何','我不愿意吃玉米粥做其他的如何','我不想吃玉米粥做其他的饭菜如何','我不愿意吃玉米粥做其他饭菜的如何'], blockAudio:false },
+      { type:'translation', sentence:'翻译：我想喝稀粥。', sentenceAudio:null,
+        hints:[{word:'想',meaning:'愿哩 / 想'},{word:'稀粥',meaning:'米汤'}],
+        blocks:['我','好','愿哩','米汤','白粥','想','喝'], answers:['我想喝米汤','我愿哩喝米汤'], blockAudio:true },
+      { type:'translation', sentence:'翻译：你在休息吗？', sentenceAudio:null,
+        hints:[{word:'在',meaning:'哩'},{word:'休息',meaning:'歇'},{word:'吗',meaning:'呗 / 咉'}],
+        blocks:['你','歇着','哩','唡','歇番*儿*','㗑','呗','忙着'], answers:['你歇着哩㗑','你歇着哩呗'], blockAudio:true },
+      { type:'translation', sentence:'翻译：我吃过午饭了。', sentenceAudio:null,
+        hints:[{word:'午饭',meaning:'晌午饭'},{word:'了',meaning:'唡 / 咧'}],
+        blocks:['我','晌午饭','黑家饭','唡','咧','吃','咧','哩','哩'], answers:['我吃哩晌午饭唡','我吃哩晌午饭咧','我吃咧晌午饭唡','我吃咧晌午饭咧'], blockAudio:true },
+      { type:'translation', sentence:'翻译：吃了吗？', sentenceAudio:null,
+        hints:[{word:'了',meaning:'咧 / 哩'},{word:'吗',meaning:'㗑 / 呗'}],
+        blocks:['吃哩','吃咧','㗑','哩'], answers:['吃哩㗑','吃咧㗑'], blockAudio:true },
+      { type:'translation', sentence:'翻译：晚上吃什么？', sentenceAudio:null,
+        hints:[{word:'晚上',meaning:'黑家'},{word:'什么',meaning:'嘛'}],
+        blocks:['黑家','晌午','后晌','吃','什么','嘛耶','嘛焉'], answers:['黑家吃嘛焉','黑家吃嘛耶'], blockAudio:true },
+      { type:'translation', sentence:'翻译：你午饭是不是吃的馒头？', sentenceAudio:null,
+        hints:[{word:'午饭',meaning:'晌午饭'},{word:'的',meaning:'哩'},{word:'馒头',meaning:'卷子'}],
+        blocks:['你','卷子','晌午','吃哩','饭','卷喒','卷子','嘫','是不是'],
+        answers:['你晌午饭是不是吃哩卷喒','你晌午饭是不是吃哩卷子嘫'], blockAudio:true }
+    ]
+  },
+  'lesson-5': {
+    title: '章节练习',
+    chapter: '第一章 入门',
+    icon: '📝',
+    intro: '第一章入门阶段综合练习：听辨声母、同义句辨析与翻译巩固。',
+    exercises: [
+      { type:'audio-choice', audio:'今儿晌午吃大鹅，沾㗑', prompt:'请选择音频不包含的声母', options:[
+        {text:'ŋ',correct:false},{text:'n',correct:true},{text:'j',correct:false}
+      ]},
+      { type:'audio-order', audio:'n g ŋ', prompt:'请按音频顺序依次点击选项', options:[
+        {text:'ŋ',audio:'ŋ'},{text:'g',audio:'g'},{text:'n',audio:'n'}
+      ], answer:['n','g','ŋ'] },
+      { type:'translation', sentence:'吃哩㗑', sentenceAudio:'吃哩㗑',
+        hints:[{word:'哩',meaning:'了'},{word:'㗑',meaning:'吗'}],
+        blocks:['吃','了','吗','呢','哩','㗑','呗'], answers:['吃了吗'], blockAudio:false },
+      { type:'translation', sentence:'歇着啷？', sentenceAudio:'歇着啷',
+        hints:[{word:'歇',meaning:'休息'},{word:'啷',meaning:'在……呀 / 居然在……吗'}],
+        blocks:['休息','在','吗','居然','呀','着'], answers:['在休息呀','居然在休息吗'], blockAudio:false },
+      { type:'text-choice', prompt:'请选择"歇着哩呗？"的同义句', options:[
+        {text:'严歇着哩',correct:false},{text:'歇着哩㗑',correct:true},{text:'歇着啷',correct:false}
+      ]},
+      { type:'translation', sentence:'老张歇着哩㗑？', sentenceAudio:'老张歇着哩㗑',
+        hints:[{word:'歇',meaning:'休息'},{word:'哩',meaning:'在'},{word:'㗑',meaning:'吗'}],
+        blocks:['老张','在','休息','吗','忙','着'], answers:['老张在休息吗'], blockAudio:false },
+      { type:'translation', sentence:'黑家吃哩白粥。', sentenceAudio:'黑家吃哩白粥',
+        hints:[{word:'黑家',meaning:'晚上'},{word:'哩',meaning:'的'},{word:'白粥',meaning:'玉米粥'}],
+        blocks:['晚上','吃的','玉米粥','大米粥'], answers:['晚上吃的玉米粥'], blockAudio:false },
+      { type:'translation', sentence:'你好吃焖子㗑？', sentenceAudio:'你好吃焖子㗑',
+        hints:[{word:'好',meaning:'喜欢'},{word:'焖子',meaning:'定州焖子'},{word:'㗑',meaning:'吗'}],
+        blocks:['你','喜欢','吃','定州','焖子','吗'],
+        answers:['你喜欢吃焖子吗','你喜欢吃定州焖子吗'], blockAudio:false },
+      { type:'translation', sentence:'他可好哩', sentenceAudio:'他可好哩',
+        hints:[{word:'可',meaning:'很 / 非常'},{word:'哩',meaning:'很 / 非常'}],
+        blocks:['他','很好','非常','好'], answers:['他很好','他非常好'], blockAudio:false },
+      { type:'translation', sentence:'道*儿*上蔫点*儿*。', sentenceAudio:'道儿上蔫点儿',
+        hints:[{word:'道*儿*',meaning:'道路'},{word:'蔫点*儿*',meaning:'慢一点 / 注意安全'}],
+        blocks:['路上','慢一点','注意安全'], answers:['路上慢一点','路上注意安全'], blockAudio:false },
+      { type:'translation', sentence:'翻译：你吃红薯吗？', sentenceAudio:null,
+        hints:[{word:'红薯',meaning:'山药'},{word:'吗',meaning:'㗑 / 呗'}],
+        blocks:['你','吃','山药','吗','㗑','呗'], answers:['你吃山药㗑','你吃山药呗'], blockAudio:true },
+      { type:'translation', sentence:'翻译：他想喝玉米粥。', sentenceAudio:null,
+        hints:[{word:'想',meaning:'愿哩 / 想'},{word:'玉米粥',meaning:'白粥'}],
+        blocks:['他','愿哩','喝','白粥'], answers:['他愿哩喝白粥'], blockAudio:true },
+      { type:'translation', sentence:'翻译：你晚上吃的什么？', sentenceAudio:null,
+        hints:[{word:'晚上',meaning:'黑家'},{word:'的',meaning:'哩'},{word:'什么',meaning:'嘛 / 什么'}],
+        blocks:['你','黑家','吃哩','嘛耶','嘛焉'], answers:['你黑家吃哩嘛焉','你黑家吃哩嘛耶'], blockAudio:true },
+      { type:'audio-choice', audio:'晌午饭', prompt:'请选择对应答案', options:[
+        {text:'早饭',correct:false},{text:'午饭',correct:true},{text:'晚饭',correct:false}
+      ]},
+      { type:'audio-choice', audio:'吃哩㗑', prompt:'你应该回答', options:[
+        {text:'吃唡',correct:true},{text:'你吃咧晌午饭哩呗',correct:false},{text:'沾',correct:false}
+      ]},
+      { type:'audio-choice', audio:'老张吃哩晌午饭唡', prompt:'你需要问什么才能得到这样的回复？', options:[
+        {text:'老张忙着哩㗑？',correct:false},{text:'老张吃啷？',correct:false},{text:'老张吃哩㗑？',correct:true}
+      ]}
+    ]
+  },
+  'lesson-6': {
+    title: '描述感受（1）',
+    chapter: '第二章 日常',
+    icon: '😊',
+    intro: '学习用定州话描述身体感受与情绪：累、饿、喜欢、讨厌。',
+    exercises: [
+      { type:'translation', sentence:'我不好吃早清*儿*饭。', sentenceAudio:'我不好吃早清儿饭',
+        hints:[{word:'好',meaning:'爱 / 喜欢'},{word:'早清*儿*饭',meaning:'早饭'}],
+        blocks:['我','不','愿意','爱吃','早饭'], answers:['我不爱吃早饭'], blockAudio:false },
+      { type:'translation', sentence:'我可使哩慌哩。', sentenceAudio:'我可使哩慌哩',
+        hints:[{word:'可',meaning:'很 / 非常'},{word:'使哩慌',meaning:'疲惫的'},{word:'哩',meaning:'很 / 非常',nth:2}],
+        blocks:['我','很','累','心累'], answers:['我很累'], blockAudio:false },
+      { type:'translation', sentence:'老张不愿哩吃山药蛋。', sentenceAudio:'老张不愿哩吃山药蛋',
+        hints:[{word:'愿哩',meaning:'愿意 / 想'},{word:'山药蛋',meaning:'土豆'}],
+        blocks:['土豆','山药','红薯','愿意','老张','不','吃'], answers:['老张不愿意吃土豆'], blockAudio:false },
+      { type:'translation', sentence:'你使哩慌㗑？', sentenceAudio:'你使哩慌㗑',
+        hints:[{word:'使哩慌',meaning:'疲惫的'},{word:'㗑',meaning:'吗'}],
+        blocks:['你','心累','吗','累','使用'], answers:['你累吗'], blockAudio:false },
+      { type:'translation', sentence:'我饿唡。', sentenceAudio:'我饿唡',
+        hints:[{word:'饿',meaning:'饿'},{word:'唡',meaning:'了'}],
+        blocks:['我饿了','我饿了吗'], answers:['我饿了'], blockAudio:false },
+      { type:'translation', sentence:'谁摆哩慌㘓？', sentenceAudio:'谁摆哩慌㘓',
+        hints:[{word:'摆哩慌',meaning:'饥饿的'},{word:'㘓',meaning:'了呀 / 呢'}],
+        blocks:['谁','饿了','呢','摆动'], answers:['谁饿了','谁饿了呢'], blockAudio:false },
+      { type:'translation', sentence:'小张*儿*饥哩不行。', sentenceAudio:'小张儿饥哩不行',
+        hints:[{word:'饥',meaning:'饥饿'},{word:'哩',meaning:'得'},{word:'不行',meaning:'不得了'}],
+        blocks:['小张','饿得','饿坏了','要命','饿了'], answers:['小张饿坏了','小张饿得要命'], blockAudio:false },
+      { type:'text-choice', prompt:'请选择"你饥㗑？"的同义句', options:[
+        {text:'你摆㗑',correct:false},{text:'你饿呗',correct:true},{text:'你摆哩慌唡',correct:false}
+      ]},
+      { type:'translation', sentence:'小刘可恨哩慌吃白山药哩。', sentenceAudio:'小刘可恨哩慌吃白山药哩',
+        hints:[{word:'可',meaning:'很 / 非常'},{word:'恨哩慌',meaning:'讨厌 / 不喜欢'},{word:'白山药',meaning:'山药'},{word:'哩',meaning:'很 / 非常',nth:2}],
+        blocks:['红薯','山药','土豆','喜欢','讨厌','小刘','吃','很'], answers:['小刘很讨厌吃山药'], blockAudio:false },
+      { type:'translation', sentence:'翻译：我很饿。', sentenceAudio:null,
+        blocks:['我可','饿哩','饥哩','摆','哩慌','哩'], answers:['我可饿哩','我可饥哩','我可摆哩慌哩'], blockAudio:true }
+    ]
+  },
+  'lesson-7': {
+    title: '描述感受（2）',
+    chapter: '第二章 日常',
+    icon: '😫',
+    intro: '继续学习感受类表达：累了一天、口味轻重、委屈与心烦。',
+    exercises: [
+      { type:'translation', sentence:'老张使哩一天唡。', sentenceAudio:'老张使哩一天唡',
+        hints:[{word:'使',meaning:'累 / 用'},{word:'哩',meaning:'了'},{word:'唡',meaning:'了'}],
+        blocks:['老张','累','一天了','了'], answers:['老张累了一天了'], blockAudio:false },
+      { type:'translation', sentence:'老张好吃扒糕。', sentenceAudio:'老张好吃扒糕',
+        hints:[{word:'好',meaning:'爱 / 喜欢'},{word:'扒糕',meaning:'扒糕'}],
+        blocks:['老张','荞麦','爱吃','焖子','扒糕'], answers:['老张爱吃扒糕'], blockAudio:false },
+      { type:'translation', sentence:'鸡汤*儿*忒薄唡。', sentenceAudio:'鸡汤儿忒薄唡',
+        hints:[{word:'忒',meaning:'太'},{word:'薄',meaning:'味道淡'},{word:'唡',meaning:'了'}],
+        blocks:['鸡汤','太咸','太淡','了'], answers:['鸡汤太淡了'], blockAudio:false },
+      { type:'translation', sentence:'小李不招人待见。', sentenceAudio:'小李不招人待见',
+        hints:[{word:'招人',meaning:'令人 / 传染人'},{word:'待见',meaning:'喜欢 / 重视'}],
+        blocks:['小李','不被人','喜欢','令人讨厌'], answers:['小李不被人喜欢','小李令人讨厌'], blockAudio:false },
+      { type:'translation', sentence:'我好吃点儿薄哩。', sentenceAudio:'我好吃点儿薄哩',
+        hints:[{word:'好',meaning:'爱 / 喜欢'},{word:'薄',meaning:'味道淡'},{word:'哩',meaning:'的'}],
+        blocks:['我爱','吃些','盐味不重的','重口的','甜的','酸的','淡口的'],
+        answers:['我爱吃些淡口的','我爱吃些盐味不重的'], blockAudio:false },
+      { type:'translation', sentence:'我可憋屈哩。', sentenceAudio:'我可憋屈哩',
+        hints:[{word:'可',meaning:'很'},{word:'憋屈',meaning:'委屈'},{word:'哩',meaning:'很'}],
+        blocks:['我很','委屈','难过'], answers:['我很委屈','我很难过'], blockAudio:false },
+      { type:'translation', sentence:'你不得劲*儿*嚷？', sentenceAudio:'你不得劲儿嚷',
+        hints:[{word:'不得劲*儿*',meaning:'不舒服'},{word:'嚷',meaning:'呀 / 难道……吗'}],
+        blocks:['你','难受','不舒服','原来','呀','吗'],
+        answers:['你不舒服呀','原来你不舒服吗','你难受呀','原来你难受吗'], blockAudio:false },
+      { type:'translation', sentence:'老张恨哩慌小李。', sentenceAudio:'老张恨哩慌小李',
+        hints:[{word:'恨哩慌',meaning:'讨厌 / 不喜欢'}],
+        blocks:['老张','小李','恨','讨厌','非常'], answers:['老张讨厌小李'], blockAudio:false },
+      { type:'translation', sentence:'小郭可劳哩慌哩。', sentenceAudio:'小郭可劳哩慌哩',
+        hints:[{word:'可',meaning:'很 / 非常'},{word:'劳哩慌',meaning:'心累 / 心烦'},{word:'哩',meaning:'很 / 非常',nth:2}],
+        blocks:['小郭','累','心烦','很','太'], answers:['小郭很心烦'], blockAudio:false },
+      { type:'audio-choice', audio:'我不使哩慌，可劳哩慌哩', prompt:'请问他身体上累吗？', options:[
+        {text:'累',correct:false},{text:'不累',correct:true}
+      ]}
+    ]
+  },
+  'lesson-8': {
+    title: '描述感受（3）',
+    chapter: '第二章 日常',
+    icon: '😌',
+    intro: '感受表达进阶：发脾气、委屈与过分，并初步接触时间词。',
+    exercises: [
+      { type:'translation', sentence:'吃了饭就不饥唡。', sentenceAudio:'吃了饭就不饥唡',
+        hints:[{word:'了',meaning:'了 / 过'},{word:'饥',meaning:'饥饿'},{word:'唡',meaning:'了'}],
+        blocks:['吃了','饭','不饿了','就'], answers:['吃了饭就不饿了'], blockAudio:false },
+      { type:'translation', sentence:'你得吃了这个。', sentenceAudio:'你得吃了这个',
+        hints:[{word:'得',meaning:'需要 / 应该'},{word:'吃了',meaning:'吃掉 / 吃了'}],
+        blocks:['你','需要','吃掉','这个'], answers:['你需要吃掉这个'], blockAudio:false },
+      { type:'translation', sentence:'黏棒子是甜哩。', sentenceAudio:'黏棒子是甜哩',
+        hints:[{word:'黏棒子',meaning:'甜玉米'},{word:'哩',meaning:'的'}],
+        blocks:['甜玉米','甜的','是','棍棒'], answers:['甜玉米是甜的'], blockAudio:false },
+      { type:'translation', sentence:'一书兜棒子可沉哩。', sentenceAudio:'一书兜棒子可沉哩',
+        hints:[{word:'书兜',meaning:'书包 / 双肩背包'},{word:'棒子',meaning:'玉米'},{word:'沉',meaning:'重'}],
+        blocks:['一背包','玉米','太','很重'], answers:['一背包玉米很重'], blockAudio:false },
+      { type:'translation', sentence:'我还无吃晌午饭哩，摆死唡。', sentenceAudio:'我还无吃晌午饭哩，摆死唡',
+        hints:[{word:'无',meaning:'没有'},{word:'哩',meaning:'呢'},{word:'摆',meaning:'饿'}],
+        blocks:['饿坏了','我还没有','吃午饭'], answers:['我还没有吃午饭饿坏了'], blockAudio:false },
+      { type:'translation', sentence:'小李撒毛子气哩。', sentenceAudio:'小李撒毛子气哩',
+        hints:[{word:'撒毛子气',meaning:'发脾气'},{word:'哩',meaning:'在 / 呢'}],
+        blocks:['小李','毽子','撒泼','发脾气','在'], answers:['小李在发脾气'], blockAudio:false },
+      { type:'translation', sentence:'夜了个*儿*小李耍性子来㗑？', sentenceAudio:'夜了个儿小李耍性子来㗑',
+        hints:[{word:'夜了个*儿*',meaning:'昨天'},{word:'耍性子',meaning:'发脾气'},{word:'来',meaning:'来着'}],
+        blocks:['小李','昨晚','昨天','发脾气','吗','呀','发过脾气'],
+        answers:['小李昨天发过脾气吗','昨天小李发过脾气吗'], blockAudio:false },
+      { type:'translation', sentence:'好不好*儿*小李还觉哩他不妄快哩！', sentenceAudio:'好不好儿小李还觉哩他不妄快哩',
+        hints:[{word:'好不好*儿*',meaning:'有可能 / 说不定'},{word:'觉哩',meaning:'觉得 / 认为'},{word:'妄快',meaning:'过分'},{word:'哩',meaning:'呢'}],
+        blocks:['说不定','好歹','小李','还认为','他','不过分','呢','纵容'],
+        answers:['说不定小李还认为他不过分呢'], blockAudio:false },
+      { type:'translation', sentence:'吃解气哩㗑？', sentenceAudio:'吃解气哩㗑',
+        hints:[{word:'解气',meaning:'过瘾 / 痛快'},{word:'哩',meaning:'了'},{word:'㗑',meaning:'吗'}],
+        blocks:['吃','过瘾','了吗'], answers:['吃过瘾了吗'], blockAudio:false },
+      { type:'text-choice', prompt:'老张____哩不行唡。请选择填入空格的字', options:[
+        {text:'使',correct:true},{text:'吃',correct:false},{text:'可',correct:false}
+      ]}
+    ]
+  },
+  'lesson-9': {
+    title: '时间与数字（1）',
+    chapter: '第二章 日常',
+    icon: '🕐',
+    intro: '学习定州话的时间词与数量词：晌午、黑家、礼拜、俩么、仨么。',
+    exercises: [
+      { type:'translation', sentence:'晌午我吃哩俩么卷子。', sentenceAudio:'晌午我吃哩俩么卷子',
+        hints:[{word:'晌午',meaning:'中午'},{word:'哩',meaning:'了'},{word:'俩么',meaning:'两个'},{word:'卷子',meaning:'馒头'}],
+        blocks:['我','中午','吃了','两个','馒头'], answers:['我中午吃了两个馒头','中午我吃了两个馒头'], blockAudio:false },
+      { type:'translation', sentence:'头黑小张*儿*就走唡。', sentenceAudio:'头黑小张儿就走唡',
+        hints:[{word:'头',meaning:'在……之前'},{word:'黑',meaning:'天黑 / 晚上'}],
+        blocks:['天黑之前','小张','就走了'], answers:['天黑之前小张就走了'], blockAudio:false },
+      { type:'translation', sentence:'赶明*儿*你买俩么白山药去。', sentenceAudio:'赶明儿你买俩么白山药去',
+        hints:[{word:'赶明*儿*',meaning:'明天 / 等到明天'},{word:'俩么',meaning:'两个'},{word:'白山药',meaning:'山药'}],
+        blocks:['山药','土豆','红薯','明天','你去买','两根'], answers:['明天你去买两根山药'], blockAudio:false },
+      { type:'translation', sentence:'礼拜六小学生*儿*不上学。', sentenceAudio:'礼拜六小学生儿不上学',
+        hints:[{word:'礼拜六',meaning:'周六'}],
+        blocks:['不','小学生','星期六','上学','放学','休息日'],
+        answers:['星期六小学生不上学','小学生星期六不上学'], blockAudio:false },
+      { type:'translation', sentence:'𬀰个*儿*是礼拜几焉？', sentenceAudio:'𬀰个儿是礼拜几焉',
+        hints:[{word:'𬀰个*儿*',meaning:'昨天'},{word:'礼拜',meaning:'星期'},{word:'焉',meaning:'呀 / 呢'}],
+        blocks:['昨天','星期几','是','昨晚','明天'], answers:['昨天是星期几'], blockAudio:false },
+      { type:'translation', sentence:'哪天是礼拜二嘫？', sentenceAudio:'哪天是礼拜二嘫',
+        hints:[{word:'嘫',meaning:'呀 / 呢'}],
+        blocks:['哪天','星期二','是','吗'], answers:['哪天是星期二'], blockAudio:false },
+      { type:'translation', sentence:'礼拜一老张吃哩扒糕汪？', sentenceAudio:'礼拜一老张吃哩扒糕汪',
+        hints:[{word:'汪',meaning:'呀 / 难道……吗'}],
+        blocks:['星期一','老张','吃的','扒糕','吗','居然','呀'],
+        answers:['星期一老张吃的扒糕呀','星期一老张居然吃的扒糕吗'], blockAudio:false },
+      { type:'translation', sentence:'我要十仨么果子。', sentenceAudio:'我要十仨么果子',
+        hints:[{word:'十仨么',meaning:'十三个'},{word:'果子',meaning:'油条'}],
+        blocks:['油条','水果','十三个','我要'], answers:['我要十三个油条'], blockAudio:false },
+      { type:'translation', sentence:'老张吃哩二阿果子。', sentenceAudio:'老张吃哩二阿果子',
+        hints:[{word:'哩',meaning:'了'},{word:'二阿',meaning:'两个'},{word:'果子',meaning:'油条'}],
+        blocks:['油条','水果','苹果','老张','吃了','两根','两颗'], answers:['老张吃了两根油条'], blockAudio:false },
+      { type:'text-choice', prompt:'你怎么不晓哩今*儿*是礼拜二____？请选择正确的语气词', options:[
+        {text:'㗑',correct:false},{text:'嚷',correct:false},{text:'嘫',correct:true}
+      ]}
+    ]
+  },
+  'lesson-10': {
+    title: '时间与数字（2）',
+    chapter: '第二章 日常',
+    icon: '📅',
+    intro: '系统学习定州话的数量词：一阿、俩么、仨么、四哇及其搭配。',
+    exercises: [
+      { type:'translation', sentence:'早清*儿*六点我就起咧。', sentenceAudio:'早清儿六点我就起咧',
+        hints:[{word:'早清*儿*',meaning:'清晨'},{word:'起',meaning:'起床'},{word:'咧',meaning:'了'}],
+        blocks:['凌晨','早晨','六点','我就','起床了'], answers:['早晨六点我就起床了'], blockAudio:false },
+      { type:'translation', sentence:'一阿、俩么、仨么、四哇，我拿哩四阿包子。', sentenceAudio:'一阿、俩么、仨么、四哇，我拿哩四阿包子',
+        hints:[{word:'一阿',meaning:'一个'},{word:'俩么',meaning:'两个'},{word:'仨么',meaning:'三个'},{word:'四哇',meaning:'四个'},{word:'哩',meaning:'了'},{word:'四阿',meaning:'四个'}],
+        blocks:['一个','两个','三个','四个','四个','我拿了','包子'],
+        answers:['一个两个三个四个我拿了四个包子'], blockAudio:false },
+      { type:'translation', sentence:'小张*儿*过了明*儿*得上学恰。', sentenceAudio:'小张儿过了明儿得上学恰',
+        hints:[{word:'过了明*儿*',meaning:'后天'},{word:'得',meaning:'需要 / 应该'},{word:'恰',meaning:'将要去'}],
+        blocks:['小张','明天','昨天','后天','要去','上学了'],
+        answers:['小张后天要去上学了','后天小张要去上学了'], blockAudio:false },
+      { type:'translation', sentence:'五哇、六哇、七阿、八哇、九阿，我吃哩九哇果子。', sentenceAudio:'五哇、六哇、七阿、八哇、九阿，我吃哩九哇果子',
+        hints:[{word:'五哇',meaning:'五个'},{word:'六哇',meaning:'六个'},{word:'八哇',meaning:'八个'},{word:'九阿',meaning:'九个'},{word:'哩',meaning:'了'},{word:'九哇',meaning:'九个'},{word:'果子',meaning:'油条'}],
+        blocks:['五个','六个','七个','八个','九个','我吃了','九根油条'],
+        answers:['五个六个七个八个九个我吃了九根油条'], blockAudio:false },
+      { type:'translation', sentence:'我买哩果子是你吃啷？', sentenceAudio:'我买哩果子是你吃啷',
+        hints:[{word:'哩',meaning:'的'},{word:'果子',meaning:'油条'},{word:'啷',meaning:'的呀 / 居然……的吗'}],
+        blocks:['居然','的吗','你吃','油条','我买的','是'], answers:['我买的油条居然是你吃的吗'], blockAudio:false },
+      { type:'translation', sentence:'后*儿*不是礼拜一。', sentenceAudio:'后儿不是礼拜一',
+        hints:[{word:'后*儿*',meaning:'后天'}],
+        blocks:['今天','明天','后天','不是','星期一'], answers:['后天不是星期一'], blockAudio:false },
+      { type:'translation', sentence:'后*儿*不开学汪？', sentenceAudio:'后儿不开学汪',
+        hints:[{word:'后*儿*',meaning:'后天'},{word:'汪',meaning:'呀 / 居然……吗'}],
+        blocks:['后天','不开学','居然','吗'], answers:['后天居然不开学吗'], blockAudio:false },
+      { type:'translation', sentence:'赶明*儿*不上班*儿*嚷？', sentenceAudio:'赶明儿不上班儿嚷',
+        hints:[{word:'赶明*儿*',meaning:'明天 / 等到明天'},{word:'嚷',meaning:'呀 / 居然……吗'}],
+        blocks:['明天','后天','不上班','居然','吗'], answers:['明天居然不上班吗'], blockAudio:false },
+      { type:'translation', sentence:'他是小李咉？', sentenceAudio:'他是小李咉',
+        hints:[{word:'咉',meaning:'呀 / 居然……吗'}],
+        blocks:['他是','小李','原来','吗','呀'], answers:['他是小李呀','原来他是小李吗'], blockAudio:false },
+      { type:'text-choice', prompt:'“扒糕”可以接哪个语气词？', options:[
+        {text:'汪',correct:true},{text:'嚷',correct:false},{text:'咉',correct:false}
+      ]}
+    ]
+  },
+  'lesson-11': {
+    title: '时间与数字（3）',
+    chapter: '第二章 日常',
+    icon: '⏰',
+    intro: '时间表达综合：昨天、今晚、明天与前天，以及家事的说法。',
+    exercises: [
+      { type:'translation', sentence:'𬀰*儿*黑家我吃哩三阿包子。', sentenceAudio:'𬀰儿黑家我吃哩三阿包子',
+        hints:[{word:'𬀰*儿*',meaning:'昨天'},{word:'黑家',meaning:'晚上'},{word:'哩',meaning:'的'},{word:'三阿',meaning:'三个'}],
+        blocks:['昨天','今天','后天','我吃了','三个','包子','晚上'],
+        answers:['昨天晚上我吃了三个包子'], blockAudio:false },
+      { type:'translation', sentence:'夜了黑家小李使横来。', sentenceAudio:'夜了黑家小李使横来',
+        hints:[{word:'夜了黑家',meaning:'昨晚'},{word:'使',meaning:'用'},{word:'横',meaning:'蛮横'},{word:'来',meaning:'来着'}],
+        blocks:['昨晚','小李','仗势欺人','来着'],
+        answers:['昨晚小李仗势欺人来着','小李昨晚仗势欺人来着'], blockAudio:false },
+      { type:'translation', sentence:'今个我吃哩九阿长果*儿*。', sentenceAudio:'今个我吃哩九阿长果儿',
+        hints:[{word:'今个',meaning:'今天'},{word:'哩',meaning:'了'},{word:'九阿',meaning:'九个'},{word:'长果*儿*',meaning:'花生'}],
+        blocks:['花生','人参果','蛇','九颗','我吃了','今天','我','吃了'],
+        answers:['今天我吃了九颗花生','我今天吃了九颗花生'], blockAudio:false },
+      { type:'translation', sentence:'明*儿*个小刘寻哩小张*儿*呀。', sentenceAudio:'明儿个小刘寻哩小张儿呀',
+        hints:[{word:'明*儿*个',meaning:'明天'},{word:'寻',meaning:'嫁 / 娶'},{word:'哩',meaning:'给 / 向 / 到'},{word:'呀',meaning:'将要'}],
+        blocks:['明天','小刘','要','嫁给','小张','娶到','了','后天'],
+        answers:['明天小刘要嫁给小张了'], blockAudio:false },
+      { type:'translation', sentence:'𬀰𬀰个*儿*小刘跟小李吵包子来。', sentenceAudio:'𬀰𬀰个儿小刘跟小李吵包子来',
+        hints:[{word:'𬀰𬀰个*儿*',meaning:'昨天'},{word:'跟',meaning:'和'},{word:'吵包子',meaning:'吵架'},{word:'来',meaning:'来着'}],
+        blocks:['昨天','今天','明天','小李','小刘','超级强','打架','吵架','来着','和'],
+        answers:['昨天小刘和小李吵架来着'], blockAudio:false },
+      { type:'translation', sentence:'黑家不睡，白日不起。', sentenceAudio:'黑家不睡，白日不起',
+        hints:[{word:'黑家',meaning:'晚上'},{word:'白日',meaning:'白天'}],
+        blocks:['昼夜颠倒'], answers:['昼夜颠倒'], blockAudio:false },
+      { type:'translation', sentence:'这昝是白日嚷？', sentenceAudio:'这昝是白日嚷',
+        hints:[{word:'这昝',meaning:'现在'},{word:'白日',meaning:'白天'},{word:'嚷',meaning:'呀 / 居然……吗'}],
+        blocks:['现在','晚上','白天','居然','是','吗'], answers:['现在居然是白天吗'], blockAudio:false },
+      { type:'translation', sentence:'这昝是黑家咉？', sentenceAudio:'这昝是黑家咉',
+        hints:[{word:'这昝',meaning:'现在'},{word:'黑家',meaning:'晚上'},{word:'咉',meaning:'呀 / 居然……吗'}],
+        blocks:['现在','晚上','白天','居然','是','吗'], answers:['现在居然是晚上吗'], blockAudio:false },
+      { type:'translation', sentence:'今*儿*么老张家添唡。', sentenceAudio:'今儿么老张家添唡',
+        hints:[{word:'今*儿*么',meaning:'今天'},{word:'添',meaning:'添丁'},{word:'唡',meaning:'了'}],
+        blocks:['今天','老张家','诞生一子'],
+        answers:['今天老张家诞生一子','老张家今天诞生一子'], blockAudio:false },
+      { type:'text-choice', prompt:'老张有四_____小子。请选择合适的量词（“小子”指儿子、男性小辈）', options:[
+        {text:'阿',correct:true},{text:'哇',correct:true},{text:'么',correct:false}
+      ]}
+    ]
+  },
+  'lesson-12': {
+    title: '询问（1）',
+    chapter: '第三章 与人交谈',
+    icon: '💬',
+    intro: '学习定州话中如何询问路线、地点和身份，掌握相关表达方式。',
+    exercises: [
+      { type:'translation', sentence:'师傅，崇文街怎么走唍？', sentenceAudio:'师傅，崇文街怎么走唍',
+        hints:[{word:'师傅',meaning:'先生'},{word:'唍',meaning:'呀 / 呢'}],
+        blocks:['先生','崇文街','怎么走'],
+        answers:['先生崇文街怎么走'], blockAudio:false },
+
+      { type:'translation', sentence:'夜了个*儿*郭伯伯数话小李来。', sentenceAudio:'夜了个儿郭伯伯数话小李来',
+        hints:[{word:'夜了个*儿*',meaning:'昨天'},{word:'伯伯',meaning:'伯父'},{word:'数话',meaning:'批评'},{word:'来',meaning:'来着'}],
+        blocks:['今天','昨天','明天','来着','小李','郭伯伯','批评','数数','说话'],
+        answers:['昨天郭伯伯批评小李来着'], blockAudio:false },
+
+      { type:'translation', sentence:'左拐就到崇文街咧。', sentenceAudio:'左拐就到崇文街咧',
+        hints:[{word:'左拐',meaning:'向左转'},{word:'咧',meaning:'了'}],
+        blocks:['左转','到达','就','崇文街','了'],
+        answers:['左转就到达崇文街了'], blockAudio:false },
+
+      { type:'translation', sentence:'南城门跟定州塔离哩不远*儿*。', sentenceAudio:'南城门跟定州塔离哩不远儿',
+        hints:[{word:'南城门',meaning:'定州南城门迎泰门'},{word:'跟',meaning:'和'},{word:'定州塔',meaning:'定州开元寺塔'},{word:'哩',meaning:'得'}],
+        blocks:['南城门','与','开元寺塔','离得','很近'],
+        answers:['南城门与开元寺塔离得很近'], blockAudio:false },
+
+      { type:'translation', sentence:'南城门站上南关门口*儿*哩。', sentenceAudio:'南城门站上南关门口儿哩',
+        hints:[{word:'南城门',meaning:'定州南城门迎泰门'},{word:'上',meaning:'在'},{word:'南关',meaning:'南关社区'},{word:'哩',meaning:'呢'}],
+        blocks:['南城门站','在','南关社区','门口','定州塔','南城区'],
+        answers:['南城门站在南关社区门口'], blockAudio:false },
+
+      { type:'translation', sentence:'老张是市里*儿*哩。', sentenceAudio:'老张是市里儿哩',
+hints:[{word:'市里*儿', meaning:'定州城区'},{word:'哩',meaning:'的'}],
+        blocks:['老张','是','南城区','西城区','市区','人'],
+        answers:['老张是市区人'], blockAudio:false },
+
+      { type:'translation', sentence:'早先*儿*小刘住哩沙河南。', sentenceAudio:'早先儿小刘住哩沙河南',
+        hints:[{word:'早先*儿*',meaning:'曾经 / 从前'},{word:'哩',meaning:'在 / 的'},{word:'沙河南',meaning:'定州境内沙河以南乡镇'}],
+        blocks:['曾经','小刘','住在','沙河北','沙河南','市区'],
+        answers:['小刘曾经住在沙河南','曾经小刘住在沙河南'], blockAudio:false },
+
+      { type:'translation', sentence:'让一下*儿*。', sentenceAudio:'让一下儿',
+        hints:[{word:'让一下*儿*',meaning:'借过'}],
+        blocks:['借过'], answers:['借过'], blockAudio:false },
+
+      { type:'translation', sentence:'你认哩沙河北哩㗑？', sentenceAudio:'你认哩沙河北哩㗑',
+        hints:[{word:'认哩',meaning:'认识 / 认得'},{word:'沙河北',meaning:'定州境内沙河以北街道与乡镇'},{word:'哩',meaning:'的',nth:2}],
+        blocks:['你','认识','沙河北','沙河南','市区','河北','沙河市','的人','吗'],
+        answers:['你认识沙河北的人吗'], blockAudio:false },
+
+      { type:'translation', sentence:'你谁焉？', sentenceAudio:'你谁焉',
+        hints:[{word:'焉',meaning:'呀'}],
+        blocks:['你','谁','是','呢','呀'],
+        answers:['你是谁','你是谁呀','你是谁呢'], blockAudio:false }
+    ]
+  },
+'lesson-13': {
+    title: '询问（2）',
+    chapter: '第三章 与人交谈',
+    icon: '💬',
+    intro: '继续学习定州话中询问与出行相关的表达，掌握称谓、地点、距离等常用说法。',
+    exercises: [
+      { type:'translation', sentence:'婆，你上崇文街去㗑？', sentenceAudio:'婆，你上崇文街去㗑',
+        hints:[{word:'婆',meaning:'妈妈'},{word:'上',meaning:'去'},{word:'㗑',meaning:'吗'}],
+        blocks:['老婆','外婆','奶奶','妈妈','你去','崇文街吗'],
+        answers:['妈妈你去崇文街吗'], blockAudio:false },
+      { type:'translation', sentence:'刘妗子想上宋街玩*儿*去。', sentenceAudio:'刘妗子想上宋街玩儿去',
+        hints:[{word:'妗子',meaning:'舅妈'},{word:'上',meaning:'去'}],
+        blocks:['刘妗子','想去','宋街','玩'],
+        answers:['刘妗子想去宋街玩'], blockAudio:false },
+      { type:'translation', sentence:'麻烦唡，师傅。', sentenceAudio:'麻烦唡，师傅',
+        hints:[{word:'麻烦唡',meaning:'麻烦了 / 谢谢'},{word:'师傅',meaning:'先生'}],
+        blocks:['麻烦了','先生','谢谢'],
+        answers:['谢谢先生','麻烦了先生'], blockAudio:false },
+      { type:'translation', sentence:'从崇文街走哩东站得好子公里！', sentenceAudio:'从崇文街走哩东站得好子公里',
+        hints:[{word:'哩',meaning:'到'},{word:'东站',meaning:'定州东站'},{word:'好子',meaning:'好几'},{word:'公里',meaning:'千米'}],
+        blocks:['从崇文街','走到','定州东站','需要','好几千米'],
+        answers:['从崇文街走到定州东站需要好几千米'], blockAudio:false },
+      { type:'translation', sentence:'你是沙河北㘓沙河南㘓？', sentenceAudio:'你是沙河北㘓沙河南㘓',
+        hints:[{word:'沙河北',meaning:'定州境内沙河以北街道与乡镇'},{word:'沙河南',meaning:'定州境内沙河以南乡镇'},{word:'㘓',meaning:'的呀 / 还是'}],
+        blocks:['你是','沙河北的','沙河南的','还是','市区','的呀','居然'],
+        answers:['你是沙河北的还是沙河南的'], blockAudio:false },
+      { type:'translation', sentence:'老姑，你愿哩上崇文街耶宋街耶？', sentenceAudio:'老姑，你愿哩上崇文街耶宋街耶',
+        hints:[{word:'老姑',meaning:'姑祖母'},{word:'愿哩',meaning:'愿意 / 想'},{word:'耶',meaning:'呀 / 呢 / 还是'}],
+        blocks:['姑姑','姑奶奶','小姑','你','更想去','崇文街','宋街','还是','或者'],
+        answers:['姑奶奶你更想去崇文街还是宋街'], blockAudio:false },
+      { type:'translation', sentence:'李婶子憋哩小李仨么可乐。', sentenceAudio:'李婶子憋哩小李仨么可乐',
+        hints:[{word:'婶子',meaning:'叔母'},{word:'憋',meaning:'没收所有权'},{word:'仨么',meaning:'三个'}],
+        blocks:['李婶子','小李','没收','三瓶','了','可乐','难受','按压'],
+        answers:['李婶子没收了小李三瓶可乐'], blockAudio:false },
+      { type:'translation', sentence:'仨么可乐多少钱*儿*嘫？', sentenceAudio:'仨么可乐多少钱儿嘫',
+        hints:[{word:'仨么',meaning:'三个'},{word:'嘫',meaning:'呀 / 呢'}],
+        blocks:['三瓶','可乐','多少钱'],
+        answers:['三瓶可乐多少钱'], blockAudio:false },
+      { type:'translation', sentence:'小刘上文庙里*儿*转向咧。', sentenceAudio:'小刘上文庙里儿转向咧',
+        hints:[{word:'文庙',meaning:'定州文庙'},{word:'转向',meaning:'迷路 / 无法正确辨别方向'},{word:'上',meaning:'在'}],
+        blocks:['小刘','文庙','在','迷路了','里','贡院','东坡双槐'],
+        answers:['小刘在文庙里迷路了'], blockAudio:false },
+      { type:'translation', sentence:'小张*儿*，稍一里地你就找着文庙唡。', sentenceAudio:'小张儿，稍一里地你就找着文庙唡',
+        hints:[{word:'稍',meaning:'后退'},{word:'一里地',meaning:'500米的距离'},{word:'找着',meaning:'找到'},{word:'文庙',meaning:'定州文庙'}],
+        blocks:['小张','往后走','500米','你就','遇到','到达','文庙了','直行','寺庙'],
+        answers:['小张往后走500米你就到达文庙了'], blockAudio:false }
+    ]
+  },
+  'lesson-14': {
+    title: '表达关系（1）',
+    chapter: '第三章 与人交谈',
+    icon: '👥',
+    intro: '学习定州话中描述人际关系和人物特征的表达方式。',
+    exercises: [
+      { type:'translation', sentence:'咱老班*儿*是我娘。', sentenceAudio:'咱老班儿是我娘',
+        hints:[{word:'咱',meaning:'你和我'},{word:'老班*儿*',meaning:'班主任'},{word:'娘',meaning:'伯母'}],
+        blocks:['班主任','我们的','是','我','妈妈','伯母'],
+        answers:['我们的班主任是我伯母'], blockAudio:false },
+      { type:'translation', sentence:'小李可尖头哩。', sentenceAudio:'小李可尖头哩',
+        hints:[{word:'尖头',meaning:'势利的 / 吝啬的 / 容易心生嫉妒的 / 攀比的'}],
+        blocks:['小李','很','势利','攀比','嫉妒'],
+        answers:['小李很势利'], blockAudio:false },
+      { type:'translation', sentence:'小李可眼馋小张*儿*哩。', sentenceAudio:'小李可眼馋小张儿哩',
+        hints:[{word:'眼馋',meaning:'羡慕'}],
+        blocks:['小李','非常','羡慕','嫉妒','恨','小张'],
+        answers:['小李非常羡慕小张'], blockAudio:false },
+      { type:'translation', sentence:'臭蛋*儿*哩爹是小张*儿*。', sentenceAudio:'臭蛋儿哩爹是小张儿',
+        hints:[{word:'臭蛋*儿*',meaning:'臭蛋 / 小男孩'},{word:'哩',meaning:'的'},{word:'爹',meaning:'爸爸'}],
+        blocks:['臭蛋','的','爸爸','是','小张'],
+        answers:['臭蛋的爸爸是小张'], blockAudio:false },
+      { type:'translation', sentence:'臭蛋*儿*发费哩。', sentenceAudio:'臭蛋儿发费哩',
+        hints:[{word:'臭蛋*儿*',meaning:'臭蛋 / 小男孩'},{word:'发费',meaning:'淘气 / 捣蛋'},{word:'哩',meaning:'在'}],
+        blocks:['臭蛋','在','淘气','花费'],
+        answers:['臭蛋在淘气'], blockAudio:false },
+      { type:'translation', sentence:'臭蛋*儿*可费哩。', sentenceAudio:'臭蛋儿可费哩',
+        hints:[{word:'臭蛋*儿*',meaning:'臭蛋 / 小男孩'},{word:'费',meaning:'淘气 / 调皮'}],
+        blocks:['臭蛋','很','淘气','花费'],
+        answers:['臭蛋很淘气'], blockAudio:false },
+      { type:'translation', sentence:'小李中风唡。', sentenceAudio:'小李中风唡',
+        hints:[{word:'中风',meaning:'感冒'}],
+        blocks:['小李','脑卒中','感冒','了','发烧'],
+        answers:['小李感冒了'], blockAudio:false },
+      { type:'translation', sentence:'边老头*儿*得哩是中风。', sentenceAudio:'边老头儿得哩是中风',
+        hints:[{word:'老头*儿*',meaning:'老年男人 / 丈夫'},{word:'得哩',meaning:'得了 / 得到'},{word:'中风',meaning:'感冒'}],
+        blocks:['边老头','患','感冒','发烧','脑卒中','尿不尽','中邪了','的是'],
+        answers:['边老头患的是感冒'], blockAudio:false },
+      { type:'translation', sentence:'小刘长哩俊。', sentenceAudio:'小刘长哩俊',
+        hints:[{word:'哩',meaning:'得'},{word:'俊',meaning:'帅 / 美'}],
+        blocks:['小刘','长得','好看','丑陋','漂亮'],
+        answers:['小刘长得好看','小刘长得漂亮'], blockAudio:false },
+      { type:'translation', sentence:'小李忒玍古唡。', sentenceAudio:'小李忒玍古唡',
+        hints:[{word:'忒',meaning:'太'},{word:'玍古',meaning:'低劣 / 性格乖僻'}],
+        blocks:['小李','太差了','性格','合群','非常'],
+        answers:['小李性格太差了'], blockAudio:false }
+    ]
+  },
+  'lesson-15': {
+    title: '表达关系（2）',
+    chapter: '第三章 与人交谈',
+    icon: '👥',
+    intro: '继续学习人际关系表达：吵架、撒娇、家庭成员称呼及相关动词。',
+    exercises: [
+      { type:'translation', sentence:'小李跟小郭搿掖哩。', sentenceAudio:'小李跟小郭搿掖哩',
+        hints:[{word:'跟',meaning:'和'},{word:'搿掖',meaning:'怄气 / 打架 / 闹矛盾'},{word:'哩',meaning:'正在 / 呢'}],
+        blocks:['小李','小郭','在','和','吵架','置气','决斗','罪孽'],
+        answers:['小李和小郭在置气'], blockAudio:false },
+      { type:'translation', sentence:'小李觉哩他姥姥可哨叨哩。', sentenceAudio:'小李觉哩他姥姥可哨叨哩',
+        hints:[{word:'觉哩',meaning:'觉得 / 认为'},{word:'姥姥',meaning:'外祖母'},{word:'哨叨',meaning:'唠叨'}],
+        blocks:['小李','外婆','觉得','很','唠叨','口哨','睡觉','姑姑','他的'],
+        answers:['小李觉得他的外婆很唠叨'], blockAudio:false },
+      { type:'translation', sentence:'小张*儿*说他婆一点*儿*也不絮叨。', sentenceAudio:'小张儿说他婆一点儿也不絮叨',
+        hints:[{word:'婆',meaning:'母亲 / 妈妈'},{word:'絮叨',meaning:'唠叨'}],
+        blocks:['小李','小张','说','他','妈妈','外婆','奶奶','一点','也不','唠叨','繁琐'],
+        answers:['小张说他妈妈一点也不唠叨'], blockAudio:false },
+      { type:'text-choice', prompt:'请选择"哨叨"的同义词', options:[
+        {text:'絮叨',correct:true},{text:'哨话',correct:false},{text:'褦襶',correct:false}
+      ]},
+      { type:'translation', sentence:'我哩胳膊是教小李弄坏哩。', sentenceAudio:'我哩胳膊是教小李弄坏哩',
+        hints:[{word:'哩',meaning:'的'},{word:'胳膊',meaning:'手臂'},{word:'教',meaning:'被 / 让'},{word:'弄',meaning:'做 / 办 / 干'}],
+        blocks:['我的','胳膊','是','被','小李','教育','弄伤','的','做','令'],
+        answers:['我的胳膊是被小李弄伤的'], blockAudio:false },
+      { type:'translation', sentence:'小张*儿*手膀唡。', sentenceAudio:'小张儿手膀唡',
+        hints:[{word:'膀',meaning:'肿'}],
+        blocks:['小张','膀胱','手','肿了','胖了','的','遇害'],
+        answers:['小张的手肿了'], blockAudio:false },
+      { type:'translation', sentence:'这是我借哩老张家哩板床*儿*。', sentenceAudio:'这是我借哩老张家哩板床儿',
+        hints:[{word:'哩',meaning:'的'},{word:'板床*儿*',meaning:'矮凳'}],
+        blocks:['这是','我','借的','老张家','的','矮','凳子','高','床板','床铺','木板床'],
+        answers:['这是我借的老张家的矮凳子'], blockAudio:false },
+      { type:'translation', sentence:'杌子就是给板床*儿*高.昂！', sentenceAudio:'杌子就是给板床儿高.昂',
+        hints:[{word:'杌子',meaning:'高凳'},{word:'给',meaning:'比'},{word:'板床*儿*',meaning:'矮凳'},{word:'昂',meaning:'啊 / 嗯'}],
+        blocks:['高凳子','就是','比','矮凳子','高啊','送给','放着','在','摞起来'],
+        answers:['高凳子就是比矮凳子高啊'], blockAudio:false },
+      { type:'translation', sentence:'臭蛋*儿*给他爹上谄哩。', sentenceAudio:'臭蛋儿给他爹上谄哩',
+        hints:[{word:'臭蛋*儿*',meaning:'臭蛋 / 小男孩'},{word:'给',meaning:'向 / 对'},{word:'爹',meaning:'父亲 / 爸爸'},{word:'上谄',meaning:'撒娇'}],
+        blocks:['臭蛋','在','向','爸爸','他的','撒娇','蹬鼻子上脸','送','说话'],
+        answers:['臭蛋在向他的爸爸撒娇'], blockAudio:false },
+      { type:'translation', sentence:'你嫑上色.昂！', sentenceAudio:'你嫑上色.昂',
+        hints:[{word:'嫑',meaning:'不要 / 别'},{word:'上色',meaning:'蹬鼻子上脸 / 给脸不要脸'},{word:'昂',meaning:'啊 / 嗯'}],
+        blocks:['你','不要','蹬鼻子上脸','需要','涂色','上头','惹怒我','啊'],
+        answers:['你不要蹬鼻子上脸啊','你不要惹怒我啊','你不要蹬鼻子上脸','你不要惹怒我'], blockAudio:false },
+      { type:'translation', sentence:'翻译：你要高凳子还是矮凳子？', sentenceAudio:null,
+        hints:[{word:'高凳子',meaning:'杌子 / 杌 / 𲔐'},{word:'矮凳子',meaning:'板床*儿* / 墩儿'},{word:'还是',meaning:'焉 / 喒 / 嘫 / 欸 / 㘃'}],
+        blocks:['你要','杌子','板床*儿*','焉','焉','喒','嘫','欸','欸','杌','𲔐','㘃','高','矬','墩*儿*'],
+        answers:['你要杌喒板床*儿*嘫','你要杌子焉板床*儿*嘫','你要杌子欸板床*儿*欸','你要杌𲔐板床*儿*㘃','你要杌子焉板床*儿*焉','你要杌子欸板床*儿*㘃'], blockAudio:true }
+    ]
+  },
+'lesson-16': {
+    title: '自然现象',
+    chapter: '第三章 与人交谈',
+    icon: '🌤️',
+    intro: '学习定州话中描述天气、时间流逝和自然现象的常用表达。',
+    exercises: [
+      { type:'translation', sentence:'白日小李跟小郭搿掖来。', sentenceAudio:'白日小李跟小郭搿掖来',
+        hints:[{word:'白日',meaning:'白天'},{word:'跟',meaning:'和'},{word:'搿掖',meaning:'怄气 / 打架 / 闹矛盾'},{word:'来',meaning:'已经'}],
+        blocks:['小李','小郭','在','来着','和','吵架','置气','决斗','罪孽','白天'],
+        answers:['白天小李和小郭置气来着'], blockAudio:false },
+      { type:'translation', sentence:'今*儿*日头可呛哩，热哩我一身汗*儿*。', sentenceAudio:'今儿日头可呛哩热哩我一身汗儿',
+        hints:[{word:'今*儿*',meaning:'今天'},{word:'日头',meaning:'太阳'},{word:'呛',meaning:'晒人的'},{word:'哩',meaning:'得',nth:2}],
+        blocks:['今天','太阳','日子','很热','热得我','全身是汗','天气'],
+        answers:['今天天气很热热得我全身是汗'], blockAudio:false },
+      { type:'translation', sentence:'夜哩是个嘛天*儿*来焉？', sentenceAudio:'夜哩是个嘛天儿来焉',
+        hints:[{word:'夜哩',meaning:'昨天'},{word:'嘛',meaning:'什么'},{word:'天*儿*',meaning:'天气'},{word:'来',meaning:'来着'},{word:'焉',meaning:'呀 / 呢'}],
+        blocks:['夜间','夜晚','晚上','昨天','的天气','是什么','来着'],
+        answers:['昨天的天气是什么来着'], blockAudio:false },
+      { type:'translation', sentence:'夜了后晌就下雨，下哩黑家也无停。', sentenceAudio:'夜了后晌就下雨，下哩黑家也无停',
+        hints:[{word:'夜了',meaning:'昨天'},{word:'后晌',meaning:'下午'},{word:'哩',meaning:'到'},{word:'黑家',meaning:'晚上'},{word:'无',meaning:'没有'}],
+        blocks:['昨天','夜间','夜晚','晚上','前天','今天','明天','就开始','下雨','下到','下了','下午','也没停'],
+        answers:['昨天下午就开始下雨下到晚上也没停','昨天下午就开始下雨下到夜间也没停','昨天下午就开始下雨下到夜晚也没停'], blockAudio:false },
+      { type:'translation', sentence:'光下雨，就无心慌*儿*唡。', sentenceAudio:'光下雨，就无心慌儿唡',
+        hints:[{word:'光',meaning:'总是 / 经常 / 只是'},{word:'心慌*儿*',meaning:'心情'}],
+        blocks:['没心情','心悸','心律失常','总是','下雨','只','就','了'],
+        answers:['总是下雨就没心情了'], blockAudio:false },
+      { type:'translation', sentence:'赶明*儿*敢不下雨。', sentenceAudio:'赶明儿敢不下雨',
+        hints:[{word:'赶明*儿*',meaning:'明天 / 等到明天'},{word:'敢',meaning:'可能 / 也许'}],
+        blocks:['明天','赶集','等到','不下雨','也许','勇敢','敢于'],
+        answers:['明天也许不下雨','也许明天不下雨'], blockAudio:false },
+      { type:'translation', sentence:'风吹吹哩脸疼。', sentenceAudio:'风吹吹哩脸疼',
+        hints:[{word:'吹吹',meaning:'风吹 / 出门闲逛 / 外出疯玩'}],
+        blocks:['风','吹得','脸痛'],
+        answers:['风吹得脸痛'], blockAudio:false },
+      { type:'translation', prompt:'🎧 请听录音，用下方字块拼出正确的方言句子', sentence:'', sentenceAudio:'后儿哩日头敢呛',
+        hints:[],
+        blocks:['后*儿*','猴*儿*','哩','日头','敢','赶','呛','强'],
+        answers:['后*儿*哩日头敢呛'], blockAudio:true },
+         { type:'translation', prompt:'🎧 请听录音，用下方字块拼出正确的方言句子', sentence:'', sentenceAudio:'好不好儿赶明儿下雨呀你嫑吹吹唡',
+        hints:[],
+        blocks:['出溜','好不好*儿*','敢','赶','明*儿*','下雨','你别','你嫑','吹吹','唡','好不好','甭','你','呀'],
+        answers:['好不好儿赶明儿下雨呀你嫑吹吹唡','好不好儿赶明儿下雨你嫑吹吹唡'], blockAudio:true },
+      { type:'translation', sentence:'赶明*儿*日头呛，嗮？', sentenceAudio:'赶明儿日头呛，嗮',
+        hints:[{word:'赶明*儿*',meaning:'明天'},{word:'日头',meaning:'太阳'},{word:'呛',meaning:'晒人的'},{word:'嗮',meaning:'是吗 / 不是吗 / 对吧'}],
+        blocks:['明天','酷热','天气','是吧','不是吗'],
+        answers:['明天天气酷热是吧','明天天气酷热不是吗'], blockAudio:false }
+    ]
+  },
+  'lesson-17': {
+    title: '强化练习',
+    chapter: '第三章 与人交谈',
+    icon: '📝',
+    intro: '第三章综合强化练习：填空、听力辨析和词汇选择。',
+    exercises: [
+      { type:'fill-blank', sentence:'你好吃卷子____包子焉？', sentenceAudio:'你好吃卷子什么包子焉',
+        blanks:[['焉']] },
+      { type:'audio-choice', audio:'赶明儿小张敢买山药恰', prompt:'请听句子，选出错误的选项', options:[
+        {text:'句子提到的时间是明天。',correct:false},
+        {text:'句子提到的食物是山药。',correct:true},
+        {text:'句子提到的可能性不是"一定"。',correct:false}
+      ]},
+      { type:'text-choice', prompt:'请选择"过了明*儿*"的同义词', options:[
+        {text:'赶明*儿*',correct:false},{text:'后*儿*',correct:true},{text:'下来',correct:false}
+      ]},
+      { type:'text-choice', prompt:'形容女生好看的词汇是：', options:[
+        {text:'俊',correct:true},{text:'俏',correct:false},{text:'爱人*儿*',correct:false}
+      ]},
+      { type:'text-choice', prompt:'小刘买哩____阿卷子。', options:[
+        {text:'五',correct:false},{text:'八',correct:false},{text:'九',correct:true}
+      ]},
+      { type:'fill-blank', sentence:'我吃____晌午饭唡，不摆哩慌。', sentenceAudio:'我吃咧晌午饭唡不摆哩慌',
+        blanks:[['哩','咧']] },
+      { type:'text-choice', prompt:'"后晌"的普通话是：', options:[
+        {text:'下午',correct:true},{text:'晚上',correct:false},{text:'黄昏',correct:false}
+      ]},
+      { type:'fill-blank', sentence:'小张*儿*____小刘高7公分。', sentenceAudio:'小张儿给小刘高七公分',
+        blanks:[['给']] },
+      { type:'fill-blank', sentence:'小刘____沙河碰对哩小张*儿*。', sentenceAudio:'小刘上沙河碰对哩小张儿',
+        blanks:[['上','往','来','给','在']] },
+      { type:'audio-choice', audio:'你怎么没心慌儿嘫', prompt:'你应该回答？', options:[
+        {text:'我憋屈哩慌',correct:true},
+        {text:'我吃卷子哩',correct:false},
+        {text:'吃哩㗑',correct:false}
+      ]}
+    ]
+  },
+  'lesson-q1': {
+    title: '元音（1）',
+    chapter: '第一章 认识字母',
+    icon: '🔤',
+    lang: 'qiang',
+    intro: '学习羌语元音字母的认读和听辨。点击羌文字母可以听发音，选择对应的读音。',
+    exercises: [
+      { type:'qiang-read', image:'1agei', audio:'agei',
+        options:['a','e','u'], answer:0 },
+      { type:'qiang-read', image:'2ugun', audio:'ugun',
+        options:['a','e','u'], answer:2 },
+      { type:'qiang-read', image:'2tu', audio:'tu',
+        options:['ta','te','tu'], answer:2 },
+      { type:'qiang-read', image:'2egen', audio:'egen',
+        options:['a','e','u'], answer:1 },
+      { type:'qiang-read', image:'2te', audio:'2te',
+        options:['ta','te','tu'], answer:1 },
+      { type:'qiang-listen', audio:'ugun', prompt:'选择你听到的字母',
+        options:['1agei','2egen','2ugun','1t'], answer:2 },
+      { type:'qiang-listen', audio:'agei', prompt:'选择你听到的字母',
+        options:['1agei','2egen','2ugun','1t'], answer:0 },
+      { type:'qiang-listen', audio:'u', prompt:'选择你听到的音节',
+        options:['2tu','1a','2u','2te'], answer:2 },
+      { type:'qiang-listen', audio:'egen', prompt:'选择你听到的字母',
+        options:['2egen','1t','1agei','2ugun'], answer:0 },
+      { type:'qiang-listen', audio:'e-qiang', prompt:'选择你听到的音节',
+        options:['2te','2u','2e','1agei'], answer:2 },
+      { type:'qiang-listen', audio:'a', prompt:'选择你听到的音节',
+        options:['1a','2te','2u','2e'], answer:0 },
+      { type:'qiang-listen', audio:'agei', prompt:'选择你听到的字母',
+        options:['1agei','2egen','2ugun','1t'], answer:0 }
+    ]
+  },
+  /* ===== 藏语课程 ===== */
+  'lesson-t1': {
+    title: '元音（1）',
+    chapter: '第一章 认识字母',
+    icon: '🔤',
+    lang: 'tibetan',
+    intro: '藏文是一种元音附标文字，本节课学习藏语的五个基础元音。',
+    exercises: [
+      { type:'tibetan-read', text:'ཨ', audio:'a-zang',
+        options:['a','i','u'], answer:'a' },
+      { type:'tibetan-read', text:'\u0F72', audio:'i-zang',
+        options:['a','i','u'], answer:'i' },
+      { type:'tibetan-read', text:'\u0F74', audio:'u-zang',
+        options:['a','i','u'], answer:'u' },
+      { type:'tibetan-read', text:'\u0F7A', audio:'e-zang',
+        options:['u','e','o'], answer:'e' },
+      { type:'tibetan-read', text:'\u0F7C', audio:'o-zang',
+        options:['u','e','o'], answer:'o' },
+      { type:'tibetan-read', text:'ཨ', audio:'a-zang',
+        options:['a','i','u'], answer:'a' },
+      { type:'tibetan-read', text:'ཨ\u0F72', audio:'i-zang',
+        options:['a','i','u'], answer:'i' },
+      { type:'tibetan-read', text:'ཨ\u0F74', audio:'u-zang',
+        options:['a','i','u'], answer:'u' },
+      { type:'tibetan-read', text:'ཨ\u0F7A', audio:'e-zang',
+        options:['u','e','o'], answer:'e' },
+      { type:'tibetan-read', text:'ཨ\u0F7C', audio:'o-zang',
+        options:['u','e','o'], answer:'o' },
+      { type:'tibetan-listen', audio:'a-zang', prompt:'请选择你听到的发音',
+        options:['ཨ\u0F72','ཨ','ཨ\u0F74'], answer:'ཨ' },
+      { type:'tibetan-listen', audio:'i-zang', prompt:'请选择你听到的发音',
+        options:['ཨ\u0F72','ཨ','ཨ\u0F74'], answer:'ཨ\u0F72' }
+    ]
+  },
+  'lesson-t2': {
+    title: '元音（2）',
+    chapter: '第一章 认识字母',
+    icon: '🔤',
+    lang: 'tibetan',
+    intro: '藏语是一种声调文字，现在开始学习声调。',
+    exercises: [
+      { type:'tibetan-read', text:'ཨ', audio:'a-zang',
+        options:['af','av','ah'], answer:'af' },
+      { type:'tibetan-listen', audio:'ga-zang', prompt:'请选择你听到的发音',
+        options:['gaf','gav','gah'], answer:'gaf' },
+      { type:'tibetan-listen', audio:'gav-zang', prompt:'请选择你听到的发音',
+        options:['gaf','gav','gah'], answer:'gav' },
+      { type:'tibetan-listen', audio:'a-zang', prompt:'请选择你听到的发音',
+        options:['ཨ\u0F72','ཨ','ཨ\u0F74'], answer:'ཨ' },
+      { type:'tibetan-listen', audio:'i-zang', prompt:'请选择你听到的发音',
+        options:['ཨ\u0F72','ཨ','ཨ\u0F74'], answer:'ཨ\u0F72' },
+      { type:'tibetan-listen', audio:'u-zang', prompt:'请选择你听到的发音',
+        options:['ཨ\u0F74','ཨ\u0F7A','ཨ\u0F7C'], answer:'ཨ\u0F74' },
+      { type:'tibetan-listen', audio:'e-zang', prompt:'请选择你听到的发音',
+        options:['ཨ\u0F74','ཨ\u0F7A','ཨ\u0F7C'], answer:'ཨ\u0F7A' },
+      { type:'tibetan-listen', audio:'o-zang', prompt:'请选择你听到的发音',
+        options:['ཨ\u0F74','ཨ\u0F7A','ཨ\u0F7C'], answer:'ཨ\u0F7C' },
+      { type:'tibetan-listen', prompt:'请选择读音为"u"的字母',
+        options:['ཨ\u0F74','ཨ\u0F7A','ཨ\u0F7C'], answer:'ཨ\u0F74' },
+      { type:'tibetan-listen', prompt:'请选择读音为"i"的字母',
+        options:['ཨ\u0F72','ཨ','ཨ\u0F74'], answer:'ཨ\u0F72' }
+    ]
+  },
+  'lesson-t3': {
+    title: '辅音（1）',
+    chapter: '第一章 认识字母',
+    icon: '🔤',
+    lang: 'tibetan',
+    intro: '藏文有三十个辅音字母，本节课学习前四个辅音字母。',
+    exercises: [
+      { type:'tibetan-read', text:'ཀ', audio:'ga-zang',
+        options:['gaf','af','i'], answer:'gaf' },
+      { type:'tibetan-read', text:'ཁ', audio:'ka-zang',
+        options:['gaf','ngaf','kaf'], answer:'kaf' },
+      { type:'tibetan-read', text:'ག', audio:'kav-zang',
+        options:['gaf','ngaf','kav'], answer:'kav' },
+      { type:'tibetan-read', text:'ང', audio:'ngav-zang',
+        options:['gaf','kav','ngav'], answer:'ngav' },
+      { type:'tibetan-listen', audio:'ga-zang', prompt:'请选择你听到的字母',
+        options:['ཀ','ཁ','ང'], answer:'ཀ' },
+      { type:'tibetan-listen', audio:'kav-zang', prompt:'请选择你听到的字母',
+        options:['ཀ','ཁ','ག'], answer:'ག' },
+      { type:'tibetan-listen', audio:'ngav-zang', prompt:'请选择你听到的字母',
+        options:['ཀ','ཁ','ང'], answer:'ང' },
+      { type:'tibetan-listen', audio:'ka-zang', prompt:'请选择你听到的字母',
+        options:['ཀ','ཁ','ག'], answer:'ཁ' },
+      { type:'tibetan-listen', prompt:'ག的读音是',
+        options:['kaf','kav','ngav'], answer:'kav' },
+      { type:'tibetan-listen', prompt:'ཁ的读音是',
+        options:['kaf','kav','ngav'], answer:'kaf' }
+    ]
+  },
+
+  /* ===== 台湾闽南语课程 ===== */
+  'lesson-h1': {
+    title: '《羊羊运动会》第一集（1）',
+    chapter: '第一章',
+    icon: '🐑',
+    lang: 'hokkien',
+    intro: '跟随喜羊羊一起学习闽南语。',
+    exercises: [
+      { type:'translation', sentence:'嗨，气味袂䆀乎', sentenceAudio:'嗨，气味袂䆀乎',
+        hints:[{word:'气味',meaning:'味道'},{word:'袂䆀',meaning:'不错'},{word:'乎',meaning:'对吧 / 不是么'}],
+        blocks:['嗨','味道','不错','臭','吧','真香'], answers:['嗨，味道不错吧'], blockAudio:false },
+      { type:'translation', sentence:'开始', sentenceAudio:'开始',
+        hints:[{word:'开始',meaning:'开始'}],
+        blocks:['放'], answers:['放'], blockAudio:false },
+      { type:'translation', sentence:'扫尾兄弟龙卷风，汝莫箍箍踅呢', sentenceAudio:'扫尾兄弟龙卷风，汝莫箍箍踅呢',
+        hints:[{word:'扫尾兄弟龙卷风',meaning:'龙卷风小弟'},{word:'汝',meaning:'你'},{word:'莫',meaning:'别 / 不要'},{word:'箍箍',meaning:'一圈圈地'},{word:'踅',meaning:'转动 / 来回走动'},{word:'呢',meaning:'吧'}],
+        blocks:['龙卷风','小弟','你就','你别','消停消停','吧','转圈'], answers:['龙卷风小弟，你就消停消停吧'], blockAudio:false },
+      { type:'translation', sentence:'为着阮羊族四十年一改的运动会会当顺利的举行', sentenceAudio:'为着阮羊族四十年一改的运动会会当顺利的举行',
+        hints:[{word:'为着',meaning:'为了'},{word:'阮',meaning:'我们 / 我的'},{word:'一改',meaning:'一度 / 一次'},{word:'会当',meaning:'可以 / 能够'}],
+        blocks:['为了','因为','羊族','我们','四十年','一度的','运动会','可以','顺利举行','改变一次的','当然'], answers:['为了我们羊族四十年一度的运动会可以顺利举行'], blockAudio:false },
+      { type:'translation', sentence:'即改汝着小歇困的乎', sentenceAudio:'即改汝着小歇困的乎',
+        hints:[{word:'即改',meaning:'这次'},{word:'汝',meaning:'你'},{word:'歇困',meaning:'休息 / 放假'},{word:'乎',meaning:'吧'}],
+        blocks:['这次','就','委屈','你','一下','了','睡觉','改变'], answers:['这次就委屈你一下了','这次你就委屈一下了'], blockAudio:false },
+      { type:'translation', sentence:'足壮观，足媠的呢', sentenceAudio:'足壮观，足媠的呢',
+        hints:[{word:'足',meaning:'很 / 非常'},{word:'媠',meaning:'漂亮的 / 美丽的'}],
+        blocks:['好','壮观','好','漂亮','呀','懒惰','丑陋','不够'], answers:['好壮观，好漂亮呀'], blockAudio:false },
+      { type:'translation', sentence:'村长，我想欲做点燃圣火的圣火手', sentenceAudio:'村长，我想欲做点燃圣火的圣火手',
+        hints:[{word:'想欲',meaning:'想要'}],
+        blocks:['村长','我','要做','点燃','圣火的','圣火手'], answers:['村长，我要做点燃圣火的圣火手'], blockAudio:false },
+      { type:'translation', sentence:'我嘛欲，我嘛欲', sentenceAudio:'我嘛欲，我嘛欲',
+        hints:[{word:'嘛',meaning:'也 / 都'},{word:'欲',meaning:'要 / 想'}],
+        blocks:['我','也','都','要做','什么','我','也','都','要做','什么','欲望','欲望'], answers:['我也要做，我也要做'], blockAudio:false },
+      { type:'translation', sentence:'点圣火是庄严又佫神圣的代志', sentenceAudio:'点圣火是庄严又佫神圣的代志',
+        hints:[{word:'佫',meaning:'又 / 而且'},{word:'代志',meaning:'事情'}],
+        blocks:['点燃','圣火','是','庄严','而又','神圣的','事情','记号','代表'], answers:['点燃圣火是庄严而又神圣的事情'], blockAudio:false },
+      { type:'translation', sentence:'毋是凊采啥物人拢会当做的', sentenceAudio:'毋是凊采啥物人拢会当做的',
+        hints:[{word:'毋',meaning:'不'},{word:'凊采',meaning:'随便 / 马马虎虎'},{word:'啥物',meaning:'什么'},{word:'拢',meaning:'都 / 全部'},{word:'会当',meaning:'可以 / 能够'}],
+        blocks:['不是','随便','谁','就可以','胜任的','冷清','真的是','都愿意'], answers:['不是随便谁就可以胜任的。'], blockAudio:false }
+    ]
+  }
+};
+
+/* ===== 音频播放 ===== */
+var currentAudio = null;
+function playAudio(text, force) {
+  if (!text) return;
+  if (!soundEnabled && !force) return;
+  if (currentAudio) { try { currentAudio.pause(); } catch(e){} }
+  var src = encodeURI('audio/' + text + '.m4a');
+  currentAudio = new Audio(src);
+  currentAudio.play().catch(function(err) {
+    console.warn('音频加载失败:', src, err);
+  });
+}
+
+/* ===== 工具：数组随机打乱 ===== */
+function shuffleArr(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function updateFillBlankBtn() {
+  var inputs = document.querySelectorAll('.fill-blank-input');
+  var allFilled = true;
+  inputs.forEach(function(inp) {
+    if (!inp.value.trim()) allFilled = false;
+  });
+  var btn = document.getElementById('lesson-check-btn');
+  if (btn) btn.className = 'duo-btn ' + (allFilled ? 'btn-green' : 'btn-gray') + ' footer-btn';
+}
+
+
+/* ===== 工具：*X* 儿化音小字号渲染 ===== */
+function renderSmallChar(text) {
+  return String(text).replace(/\*([^*]+)\*/g, '<span class="small-char">$1</span>');
+}
+
+/* ===== 听音排序题状态 ===== */
+var orderState = [];
+var orderAnswer = [];
+function pickOrderOption(i) {
+  if (answerLocked) return;                              // ✅ 新增
+  if (orderState[i].used) return;  orderState[i].used = true;
+  orderAnswer.push(orderState[i].text);
+  var el = document.getElementById('order-opt-' + i);
+  if (el) el.classList.add('order-used');
+  renderOrderArea();
+}
+function removeOrderChip(idx) {
+  if (answerLocked) return;                              // ✅ 新增
+  var text = orderAnswer[idx];
+  orderAnswer.splice(idx, 1);
+  for (var j = 0; j < orderState.length; j++) {
+    if (orderState[j].used && orderState[j].text === text) {
+      orderState[j].used = false;
+      var el = document.getElementById('order-opt-' + j);
+      if (el) el.classList.remove('order-used');
+      break;
+    }
+  }
+  renderOrderArea();
+}
+function renderOrderArea() {
+  var area = document.getElementById('order-area');
+  if (!area) return;
+  if (orderAnswer.length === 0) {
+    area.classList.remove('has-content');
+    area.innerHTML = '<div class="answer-placeholder">按听到的顺序点击下方选项</div>';
+  } else {
+    area.classList.add('has-content');
+    var h = '';
+    orderAnswer.forEach(function(t, i) {
+      h += '<div class="answer-block" onclick="removeOrderChip(' + i + ')">' + t + '</div>';
+    });
+    area.innerHTML = h;
+  }
+  var ex = currentExercises[currentStep];
+  var full = orderAnswer.length === ex.options.length;
+  document.getElementById('lesson-check-btn').className = 'duo-btn ' + (full ? 'btn-green' : 'btn-gray') + ' footer-btn';
+}
+
+/* ===== 羌语图片渲染 ===== */
+function renderQiangImg(imgSpec, height) {
+  /* imgSpec 如 "1agei" 或 "2ugun"，数字前缀=字宽（占多少英文字符宽） */
+  /* 严格按字宽：宽度 = 字宽单位 × 高度 */
+  var match = imgSpec.match(/^(\d+)(.+)$/);
+  if (!match) return imgSpec;
+  var widthUnits = parseInt(match[1]);
+  var h = height || '1em';
+  var hNum = parseFloat(h);
+  var hUnit = h.replace(/[\d.]/g, '') || 'em';
+  var w = (widthUnits * hNum) + hUnit;
+  return '<img src="qiang-img/' + imgSpec + '.png" class="qiang-img" style="height:' + h + ';width:' + w + ';" alt="' + match[2] + '">';
+}
+
+/* ===== 语言元数据 ===== */
+var LANGS = {
+  'dingzhou': { flag: '⭐', name: '定州话', sub: '冀鲁官话 · 保唐片 · 定霸小片', type: 'dialect',  hasAlphabet: false },
+  'qiang':    { flag: '💫', name: '羌语',   sub: '汉藏语系 · 藏缅语族 · 羌语支', type: 'language', hasAlphabet: true  },
+  'tibetan':  { flag: '⛰️', name: '藏语',   sub: '汉藏语系 · 藏缅语族 · 藏语支', type: 'language', hasAlphabet: true  },
+  'hokkien':  { flag: '🫧', name: '台湾闽南语', sub: '闽语 · 闽南片 · 泉漳小片', type: 'dialect', hasAlphabet: false, beta: true }
+};
+
+/* ===== 自动从 courses 推导每门语言的课程列表 =====
+   规则：
+   - 有 lang 字段的课程 → 归到对应语言（如 lang:'qiang'）
+   - 没写 lang 字段的课程 → 默认归定州话
+   顺序：按 courses 里的书写顺序（所以请把同一语言的课程写在一起） */
+(function buildLessonLists() {
+  Object.keys(LANGS).forEach(function(langId) {
+    LANGS[langId].lessons = [];
+  });
+  Object.keys(courses).forEach(function(lid) {
+    var course = courses[lid];
+    if (!course) return;
+    var lang = course.lang || 'dingzhou';
+    if (LANGS[lang]) LANGS[lang].lessons.push(lid);
+  });
+})();
+
+/* 按 type 归类，用于两栏渲染 */
+var LANG_PANELS = [
+  { type: 'dialect',  title: '汉语方言', sub: '地方口音 · 地域变体' },
+  { type: 'language', title: '民族语言', sub: '少数民族语言' }
+];
+
+/* 当前活跃的 tab */
+var activeLangPanel = 'dialect';
+
+/* 语言面板切换（点击 tab + 滑动） */
+function switchLangPanel(type) {
+  if (type === activeLangPanel) return;
+  activeLangPanel = type;
+  /* 更新 tab 按钮 */
+  document.querySelectorAll('.lang-tab').forEach(function(t) {
+    t.classList.toggle('active', t.dataset.tab === type);
+  });
+  /* 切换面板显示 */
+  document.querySelectorAll('.lang-panel').forEach(function(p) {
+    p.classList.toggle('active', p.dataset.type === type);
+  });
+}
+
+/* 滑动切换（触摸事件） */
+(function initLangSwipe() {
+  var container = document.getElementById('lang-panels-container');
+  if (!container) return;
+  var startX = 0, startY = 0, moved = false;
+  container.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    moved = false;
+  }, {passive: true});
+  container.addEventListener('touchmove', function(e) {
+    if (Math.abs(e.touches[0].clientY - startY) > 30) { moved = false; return; }
+    moved = true;
+  }, {passive: true});
+  container.addEventListener('touchend', function(e) {
+    if (!moved) return;
+    var dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) < 40) return;
+    var panels = ['dialect', 'language'];
+    var idx = panels.indexOf(activeLangPanel);
+    if (dx < 0) { /* 左滑 → 下一个 */
+      if (idx < panels.length - 1) switchLangPanel(panels[idx + 1]);
+    } else { /* 右滑 → 上一个 */
+      if (idx > 0) switchLangPanel(panels[idx - 1]);
+    }
+  });
+})();
+
+/* ===== 已激活语言列表 ===== */
+var activeLangs = ['dingzhou'];
+
+/* ===== 语言切换 ===== */
+function switchLang(lang) {
+  if (!LANGS[lang]) return;
+  currentLang = lang;
+  saveData();
+  /* 更新 topbar flag */
+  var flagEl = document.getElementById('topbar-flag');
+  if (flagEl) flagEl.textContent = LANGS[lang].flag;
+  /* 切换路径显示 */
+   /* 切换路径：直接重新渲染 */
+  renderPath();
+  /* 字母表导航项 */
+  var navAlpha = document.getElementById('nav-alphabet');
+  if (navAlpha) navAlpha.style.display = LANGS[lang].hasAlphabet ? '' : 'none';
+  /* 更新语言选择页选中状态 */
+  renderLangList();
+  /* 更新设置页语言名称 */
+  var settingsLang = document.getElementById('settings-current-lang');
+  if (settingsLang) settingsLang.textContent = LANGS[lang].name + ' ›';
+}
+
+function selectLangItem(lang) {
+  switchLang(lang);
+  showScreen('home');
+}
+
+/* ===== 渲染语言列表（两栏：方言 / 民族语言） ===== */
+function renderLangList() {
+  /* 渲染每个面板 */
+  LANG_PANELS.forEach(function(panel) {
+    var container = document.getElementById('lang-list-' + panel.type);
+    if (!container) return;
+    var html = '';
+    var itemsInPanel = activeLangs.filter(function(langId) {
+      var info = LANGS[langId];
+      return info && info.type === panel.type;
+    });
+    itemsInPanel.forEach(function(langId) {
+      var info = LANGS[langId];
+      var isSelected = langId === currentLang;
+      var doneCount = info.lessons.filter(function(l){ return completedLessons[l]; }).length;
+      var badgeText = isSelected ? '学习中' : '已添加';
+      html += '<div class="lang-item' + (isSelected ? ' selected' : '') + '" data-lang="' + langId + '" onclick="selectLangItem(\'' + langId + '\')">';
+      html += '<div class="lang-flag">' + info.flag + '</div>';
+      html += '<div class="lang-info">';
+      html += '<div class="lang-name">' + info.name + (info.beta ? ' <span class="beta-tag">测试版</span>' : '') + '</div>';
+      html += '<div class="lang-sub">' + info.sub + (doneCount > 0 ? ' · 已完成 ' + doneCount + ' 课' : '') + '</div>';
+      html += '</div>';
+      html += '<div class="lang-badge new">' + badgeText + '</div>';
+      html += '<button class="lang-delete" onclick="event.stopPropagation();confirmDeleteLang(\'' + langId + '\')" title="删除">✕</button>';
+      html += '</div>';
+    });
+    /* 新增按钮（按面板类型筛选可添加项） */
+    var hasInactiveInPanel = Object.keys(LANGS).some(function(l) {
+      return activeLangs.indexOf(l) === -1 && LANGS[l] && LANGS[l].type === panel.type;
+    });
+    if (hasInactiveInPanel) {
+      html += '<div class="lang-add-btn" onclick="showAddLangPopup(\'' + panel.type + '\')">';
+      html += '<span class="lang-add-icon">+</span>';
+      html += '<span class="lang-add-text">新增</span>';
+      html += '</div>';
+    } else if (itemsInPanel.length === 0) {
+      html += '<div class="lang-empty">暂无</div>';
+    }
+    container.innerHTML = html;
+    if (traditionalMode && initConverters()) {
+      walkTextNodes(container, function(node) { node.textContent = stConverter(node.textContent); });
+    }
+  });
+}
+
+/* ===== 删除语言 ===== */
+function confirmDeleteLang(langId) {
+  var info = LANGS[langId];
+  if (!info) return;
+  /* 不允许删除最后一个语言 */
+  if (activeLangs.length <= 1) {
+    toast('至少保留一门语言');
+    return;
+  }
+  showPopup('🗑️', '删除' + info.name + '？', '将从学习列表中移除' + info.name + '，\n学习进度将被清除且不可恢复。\n之后可随时重新添加，但进度不保留。', [
+    { text: '确认删除', class: 'btn-red', action: "deleteLang('" + langId + "')" },
+    { text: '取消', class: 'btn-white', action: 'closePopup()' }
+  ]);
+}
+
+function deleteLang(langId) {
+  closePopup();
+  /* 从 activeLangs 移除 */
+  var idx = activeLangs.indexOf(langId);
+  if (idx !== -1) activeLangs.splice(idx, 1);
+  /* 清除该语言的课程进度 */
+  var info = LANGS[langId];
+  if (info && info.lessons) {
+    info.lessons.forEach(function(lid) {
+      delete completedLessons[lid];
+    });
+  }
+  /* 如果删除的是当前语言，切换到第一个可用语言 */
+  if (currentLang === langId) {
+    currentLang = activeLangs[0] || 'dingzhou';
+  }
+  saveData();
+  switchLang(currentLang);
+  updatePathNodes();
+  toast('已删除' + (info ? info.name : '语言'));
+}
+
+/* ===== 添加语言（按面板类型筛选） ===== */
+function showAddLangPopup(panelType) {
+  var inactiveLangs = Object.keys(LANGS).filter(function(l) {
+    if (activeLangs.indexOf(l) !== -1) return false;
+    if (panelType && LANGS[l] && LANGS[l].type !== panelType) return false;
+    return true;
+  });
+  if (inactiveLangs.length === 0) {
+    toast('该分类下已全部添加');
+    return;
+  }
+  /* 根据面板类型选标题 */
+  var panelTitle = '语言';
+  if (panelType === 'dialect')  panelTitle = '汉语方言';
+  if (panelType === 'language') panelTitle = '民族语言';
+  var card = document.getElementById('popup-card');
+  var html = '<div class="popup-icon">🌐</div>';
+  html += '<div class="popup-title">添加' + panelTitle + '</div>';
+  html += '<div class="popup-desc">选择要添加的' + panelTitle + '：</div>';
+  html += '<div class="popup-btns">';
+  inactiveLangs.forEach(function(langId) {
+    var info = LANGS[langId];
+    html += '<button class="duo-btn btn-white" onclick="addLang(\'' + langId + '\')">';
+    html += info.flag + ' ' + info.name + (info.beta ? ' <span class="beta-tag">测试版</span>' : '');
+    html += '</button>';
+  });
+  html += '<button class="duo-btn btn-gray" onclick="closePopup()">取消</button>';
+  html += '</div>';
+  card.innerHTML = html;
+  document.getElementById('popup-overlay').classList.add('show');
+  if (traditionalMode && initConverters()) {
+    walkTextNodes(card, function(node) { node.textContent = stConverter(node.textContent); });
+  }
+}
+
+function addLang(langId) {
+  closePopup();
+  if (activeLangs.indexOf(langId) !== -1) {
+    toast('该语言已在学习列表中');
+    return;
+  }
+  activeLangs.push(langId);
+  saveData();
+  renderLangList();
+  toast('已添加' + LANGS[langId].name);
+}
+
+/* ===== 羌语字母表 ===== */
+var qiangAlphabet = {
+  vowels: [
+    /* {img:'1a', name:'a'}, {img:'2e', name:'e'}, {img:'2u', name:'u'} ... 待补充 */
+  ],
+  consonants: [
+    /* {img:'1t', name:'t'} ... 待补充 */
+  ]
+};
+
+var tibetanAlphabet = {
+  vowels: [
+    { letter:'ཨ',  name:'a', audio:'a-zang' },
+    { letter:'ཨི', name:'i', audio:'i-zang' },
+    { letter:'ཨུ', name:'u', audio:'u-zang' },
+    { letter:'ཨེ', name:'e', audio:'e-zang' },
+    { letter:'ཨོ', name:'o', audio:'o-zang' }
+  ],
+  consonants: [
+    { letter:'ཀ', name:'gaf',  audio:'ga-zang' },
+    { letter:'ཁ', name:'kaf',  audio:'ka-zang' },
+    { letter:'ག', name:'kav',  audio:'kav-zang' },
+    { letter:'ང', name:'ngav', audio:'ngav-zang' }
+  ]
+};
+
+/* ===== 渲染字母表 ===== */
+function renderAlphabet() {
+  var container = document.getElementById('alphabet-content');
+  if (!container) return;
+  var info = LANGS[currentLang];
+  if (!info || !info.hasAlphabet) {
+    container.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 60px 30px; text-align:center;">' +
+      '<div style="font-size: 64px; margin-bottom: 20px;">🔤</div>' +
+      '<div style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">当前语言无需字母表</div>' +
+      '<div style="font-size: 14px; color: var(--text-light); line-height: 1.6;">' +
+      '定州话使用汉字书写，无独立字母表。</div></div>';
+    if (traditionalMode && initConverters()) {
+      walkTextNodes(container, function(node) { node.textContent = stConverter(node.textContent); });
+    }
+    return;
+  }
+  if (currentLang === 'qiang') {
+    var html = '<div class="alphabet-page">';
+    html += '<div class="alphabet-title">羌语字母表</div>';
+    html += '<div class="alphabet-sub">点击字母可听发音（待开发）</div>';
+    /* 元音 */
+    html += '<div class="alphabet-section">';
+    html += '<div class="alphabet-section-title">元音</div>';
+    if (qiangAlphabet.vowels.length > 0) {
+      html += '<div class="alphabet-grid">';
+      qiangAlphabet.vowels.forEach(function(v) {
+        html += '<div class="alphabet-cell">';
+        html += '<div class="alphabet-cell-letter">' + renderQiangImg(v.img, '28px') + '</div>';
+        html += '<div class="alphabet-cell-name">' + v.name + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    } else {
+      html += '<div class="alphabet-tbd">元音字母待开发<br>敬请期待</div>';
+    }
+    html += '</div>';
+    /* 辅音 */
+    html += '<div class="alphabet-section">';
+    html += '<div class="alphabet-section-title">辅音</div>';
+    if (qiangAlphabet.consonants.length > 0) {
+      html += '<div class="alphabet-grid">';
+      qiangAlphabet.consonants.forEach(function(c) {
+        html += '<div class="alphabet-cell">';
+        html += '<div class="alphabet-cell-letter">' + renderQiangImg(c.img, '28px') + '</div>';
+        html += '<div class="alphabet-cell-name">' + c.name + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    } else {
+      html += '<div class="alphabet-tbd">辅音字母待开发<br>敬请期待</div>';
+    }
+    html += '</div>';
+    html += '</div>';
+    container.innerHTML = html;
+  } else if (currentLang === 'tibetan') {
+    var html = '<div class="alphabet-page">';
+    html += '<div class="alphabet-title">藏文字母表</div>';
+    html += '<div class="alphabet-sub">点击字母可听发音</div>';
+    /* 元音 */
+    html += '<div class="alphabet-section">';
+    html += '<div class="alphabet-section-title">元音</div>';
+    html += '<div class="alphabet-grid">';
+    tibetanAlphabet.vowels.forEach(function(v) {
+      var aEsc = v.audio.replace(/'/g, "\\'");
+      html += '<div class="alphabet-cell" onclick="playAudio(\'' + aEsc + '\', true)">';
+      html += '<div class="alphabet-cell-letter" style="font-family:var(--font-main);font-size:32px;">' + v.letter + '</div>';
+      html += '<div class="alphabet-cell-name">' + v.name + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '</div>';
+    /* 辅音 */
+    html += '<div class="alphabet-section">';
+    html += '<div class="alphabet-section-title">辅音</div>';
+    html += '<div class="alphabet-grid">';
+    tibetanAlphabet.consonants.forEach(function(c) {
+      var aEsc = c.audio.replace(/'/g, "\\'");
+      html += '<div class="alphabet-cell" onclick="playAudio(\'' + aEsc + '\', true)">';
+      html += '<div class="alphabet-cell-letter" style="font-family:var(--font-main);font-size:32px;">' + c.letter + '</div>';
+      html += '<div class="alphabet-cell-name">' + c.name + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    container.innerHTML = html;
+  } else {
+    container.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 60px 30px; text-align:center;">' +
+      '<div style="font-size: 64px; margin-bottom: 20px;">🔤</div>' +
+      '<div style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">字母表待开发</div></div>';
+  }
+  if (traditionalMode && initConverters()) {
+    walkTextNodes(container, function(node) { node.textContent = stConverter(node.textContent); });
+  }
+}
+
+/* ===== 课程启动 ===== */
+function startLesson(lessonId) {
+  if (!lessonId) lessonId = 'lesson-1';
+  var course = courses[lessonId];
+  if (!course) { toast('课程未找到'); return; }
+  if (userData.hearts <= 0) {
+    showPopup('💔', '生命用完了！', '你的心都用光了，需要补充生命才能继续学习。', [
+      { text: '用 💎350 补充', class: 'btn-green', action: 'refillHearts()' },
+      { text: '去商店', class: 'btn-white', action: "closePopup();showScreen('shop')" }
+    ]);
+    return;
+  }
+  currentLessonId = lessonId;
+  currentExercises = course.exercises;
+  lessonProgress = 0;
+  lessonHearts = userData.hearts;
+  currentStep = 0;
+  reviewQueue = [];
+  inReview = false;
+  originalLength = course.exercises.length;
+  wrongCount = 0;
+  totalCompleted = 0;
+  document.getElementById('screen-lesson').classList.add('active');
+  document.getElementById('lesson-hearts-count').textContent = lessonHearts;
+  showLessonIntro();
+}
+
+function showLessonIntro() {
+  var course = courses[currentLessonId];
+  var body = document.getElementById('lesson-body');
+  var footer = document.getElementById('lesson-footer');
+  footer.style.display = 'none';
+
+  body.innerHTML = '<div class="lesson-intro">' +
+    '<div class="lesson-intro-icon">' + course.icon + '</div>' +
+    '<div class="lesson-intro-chapter">' + course.chapter + '</div>' +
+    '<div class="lesson-intro-title">' + course.title + '</div>' +
+    '<div class="lesson-intro-desc">' + course.intro + '</div>' +
+    '<button class="duo-btn btn-green" style="width:100%; max-width:280px;" onclick="beginExercises()">开始上课</button>' +
+    '</div>';
+  body.scrollTop = 0;
+
+  if (traditionalMode && initConverters()) {
+    walkTextNodes(body, function(node) { node.textContent = stConverter(node.textContent); });
+  }
+}
+
+function beginExercises() {
+  document.getElementById('lesson-footer').style.display = '';
+  renderExercise();
+  updateProgress();
+}
+
+function exitLesson() {
+  showPopup('⚠️', '确定退出吗？', '你的学习进度将不会被保存。', [
+    { text: '继续学习', class: 'btn-green', action: 'closePopup()' },
+    { text: '退出', class: 'btn-white', action: 'closeLesson()' }
+  ]);
+}
+
+function closeLesson() {
+  closePopup();
+  document.getElementById('screen-lesson').classList.remove('active');
+  document.getElementById('lesson-footer').style.display = '';
+  updateTopbar();
+}
+
+/* ===== 渲染练习题 ===== */
+function renderExercise() {
+  var ex = currentExercises[currentStep];
+  if (!ex) return;              // ✅ 新增
+  answerLocked = false;         // ✅ 新增
+  exerciseType = ex.type;
+  selectedAnswer = null;  var body = document.getElementById('lesson-body');
+  var checkBtn = document.getElementById('lesson-check-btn');
+
+  checkBtn.className = 'duo-btn btn-gray footer-btn';
+  checkBtn.textContent = '检查';
+  checkBtn.onclick = checkAnswer;
+  document.getElementById('footer-feedback').style.visibility = 'hidden';
+
+  var promptText = ex.prompt || (ex.type === 'translation' ? '请将句子翻译为普通话' : (ex.type === 'qiang-read' ? '选择这个字母的读音' : (ex.type === 'tibetan-read' ? '选择这个字母的读音' : '')));
+  var html = '';
+  if (inReview) {
+    html += '<div class="review-banner">📝 复习错题</div>';
+  }
+  html += '<div class="exercise-prompt">' + renderSmallChar(promptText);
+  if (ex.hints && ex.hints.length > 0 && ex.sentenceAudio) {
+    html += ' <span class="new-vocab-tag">新词汇</span>';
+  }
+  html += '</div>';
+  var audioEsc = ex.audio ? ex.audio.replace(/'/g, "\\'") : '';
+
+  if (ex.type === 'audio-choice') {
+    html += '<div class="audio-play-big" onclick="playAudio(\'' + audioEsc + '\', true)">🔊</div>';
+    html += '<div class="audio-replay" onclick="playAudio(\'' + audioEsc + '\', true)"><span>🔄</span> 点击重听</div>';
+    var opts = shuffleArr(ex.options);
+    html += '<div class="choice-list">';
+    opts.forEach(function(opt, i) {
+      html += '<div class="choice-card" onclick="selectChoice(this)" data-correct="' + opt.correct + '">';
+      html += '<span class="choice-key">' + String.fromCharCode(65+i) + '</span>';
+      html += '<span class="choice-text">' + opt.text + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    setTimeout(function(){ playAudio(ex.audio, true); }, 400);
+
+  } else if (ex.type === 'text-audio-choice') {
+    html += '<div class="display-text">' + ex.text + '</div>';
+    var opts = shuffleArr(ex.options);
+    html += '<div class="audio-opt-list">';
+    opts.forEach(function(opt, i) {
+      var aEsc = opt.audio.replace(/'/g, "\\'");
+      html += '<div class="audio-opt-card" onclick="selectAudioOption(this)" data-correct="' + opt.correct + '" data-audio="' + aEsc + '">';
+      html += '<div class="audio-opt-icon">🔊</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+  } else if (ex.type === 'audio-text-audio') {
+    html += '<div class="audio-play-big" onclick="playAudio(\'' + audioEsc + '\', true)">🔊</div>';
+    html += '<div class="audio-replay" onclick="playAudio(\'' + audioEsc + '\', true)"><span>🔄</span> 点击重听</div>';
+    var opts = shuffleArr(ex.options);
+    html += '<div class="choice-list">';
+    opts.forEach(function(opt, i) {
+      var aEsc = opt.audio.replace(/'/g, "\\'");
+      html += '<div class="ta-opt" onclick="selectTAOption(this)" data-correct="' + opt.correct + '" data-audio="' + aEsc + '">';
+      html += '<span class="ta-opt-key">' + String.fromCharCode(65+i) + '</span>';
+      html += '<span class="ta-opt-text">' + opt.text + '</span>';
+      html += '<span class="ta-opt-play" onclick="event.stopPropagation();playAudio(\'' + aEsc + '\', true)">🔊</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    setTimeout(function(){ playAudio(ex.audio, true); }, 400);
+
+  /* ===== 纯文字选择题（无音频） ===== */
+  } else if (ex.type === 'text-choice') {
+    var tcopts = shuffleArr(ex.options);
+    html += '<div class="choice-list">';
+    tcopts.forEach(function(opt, i) {
+      html += '<div class="choice-card" onclick="selectChoice(this)" data-correct="' + opt.correct + '">';
+      html += '<span class="choice-key">' + String.fromCharCode(65+i) + '</span>';
+      html += '<span class="choice-text">' + renderSmallChar(opt.text) + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+  /* ===== 听音排序题：按音频顺序点击选项 ===== */
+  } else if (ex.type === 'audio-order') {
+    orderAnswer = [];
+    html += '<div class="audio-play-big" onclick="playAudio(\'' + audioEsc + '\', true)">🔊</div>';
+    html += '<div class="audio-replay" onclick="playAudio(\'' + audioEsc + '\', true)"><span>🔄</span> 点击重听</div>';
+    html += '<div class="answer-area" id="order-area"><div class="answer-placeholder">按听到的顺序点击下方选项</div></div>';
+    var oopts = shuffleArr(ex.options);
+    orderState = oopts.map(function(o){ return {text:o.text, audio:o.audio, used:false}; });
+    html += '<div class="choice-list">';
+    oopts.forEach(function(opt, i) {
+      var oaEsc = opt.audio.replace(/'/g, "\\'");
+      html += '<div class="ta-opt" id="order-opt-' + i + '" onclick="pickOrderOption(' + i + ')">';
+      html += '<span class="ta-opt-key">' + String.fromCharCode(65+i) + '</span>';
+      html += '<span class="ta-opt-text">' + opt.text + '</span>';
+      html += '<span class="ta-opt-play" onclick="event.stopPropagation();playAudio(\'' + oaEsc + '\', true)">🔊</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    setTimeout(function(){ playAudio(ex.audio, true); }, 400);
+
+  } else if (ex.type === 'translation') {
+    translationAnswer = [];
+    currentHints = ex.hints;
+
+    /* 构建带可点击提示词的句子（h.nth 可指定只标记第几个匹配，用于同字多处提示） */
+    var sentenceHtml = ex.sentence;
+    (ex.hints || []).forEach(function(h, i) {
+      var escaped = h.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      var regex = new RegExp(escaped, 'g');
+      var meanings = h.meaning.split(/\s*\/\s*/);
+      var tooltipHtml = meanings.length > 1
+        ? meanings.map(function(m){ return '<span class="hint-tooltip-line">' + m + '</span>'; }).join('')
+        : h.meaning;
+      var matchCount = 0;
+      sentenceHtml = sentenceHtml.replace(regex, function(match) {
+        matchCount++;
+        if (h.nth && matchCount !== h.nth) return match;
+        return '<span class="hint-word" onclick="toggleHintWord(this)">' + match + '<span class="hint-tooltip">' + tooltipHtml + '</span></span>';
+      });
+    });
+     /* 处理 *X* 小字号标记（儿化音等） */
+    sentenceHtml = renderSmallChar(sentenceHtml);
+    if (sentenceHtml && sentenceHtml.trim()) {
+      html += '<div class="trans-sentence">' + sentenceHtml + '</div>';
+    }
+
+    /* 句子音频按钮 */
+    if (ex.sentenceAudio) {
+      var saEsc = ex.sentenceAudio.replace(/'/g, "\\'");
+      html += '<div class="trans-audio-row">';
+      html += '<div class="trans-audio-btn" onclick="playAudio(\'' + saEsc + '\')"><span>🔊</span> 点击重听</div>';
+      html += '</div>';
+      setTimeout(function(){ playAudio(ex.sentenceAudio); }, 400);
+    }
+
+    /* 答案区 */
+    html += '<div class="answer-area" id="answer-area">';
+    html += '<div class="answer-placeholder">点击下方字块组成答案</div>';
+    html += '</div>';
+
+    /* 字块（随机排列） */
+    var shuffled = shuffleArr(ex.blocks);
+    translationBlockState = shuffled.map(function(b){ return {text:b, used:false}; });
+    html += '<div class="word-bank-2" id="word-bank">';
+    shuffled.forEach(function(b, i) {
+      html += '<div class="bank-block" onclick="addBlock(' + i + ')" data-idx="' + i + '">' + renderSmallChar(b) + '</div>';
+    });
+    html += '</div>';
+  }
+  else if (ex.type === 'fill-blank') {
+    var fbs = String(ex.sentence || '');
+    var parts = fbs.split('____');
+    var fbHtml = '';
+    parts.forEach(function(part, i) {
+      fbHtml += renderSmallChar(part);
+      if (i < parts.length - 1) {
+        fbHtml += '<input type="text" class="fill-blank-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="填空">';
+      }
+    });
+    html += '<div class="fill-blank-sentence">' + fbHtml + '</div>';
+    if (ex.sentenceAudio) {
+      var fbaEsc = ex.sentenceAudio.replace(/'/g, "\\'");
+      html += '<div class="trans-audio-row">';
+      html += '<div class="trans-audio-btn" onclick="playAudio(\'' + fbaEsc + '\')"><span>🔊</span> 点击重听</div>';
+      html += '</div>';
+      setTimeout(function(){ playAudio(ex.sentenceAudio); }, 400);
+    }
+  }
+
+  /* ===== 羌语：看字选音（qiang-read）===== */
+  if (ex.type === 'qiang-read') {
+    var imgHtml = renderQiangImg(ex.image, '64px');
+    var audioEsc = ex.audio ? ex.audio.replace(/'/g, "\\'") : '';
+    html += '<div class="qiang-letter-display" onclick="playAudio(\'' + audioEsc + '\')">' + imgHtml + '</div>';
+    html += '<div class="qiang-letter-tap-hint">👆 点击字母听发音</div>';
+    html += '<div class="qiang-choice-list">';
+    ex.options.forEach(function(opt, i) {
+      html += '<div class="qiang-choice-card" onclick="selectQiangOption(this)" data-idx="' + i + '">';
+      html += '<span class="qiang-choice-key">' + String.fromCharCode(65+i) + '</span>';
+      html += '<span class="qiang-choice-text">' + opt + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    setTimeout(function(){ if (ex.audio) playAudio(ex.audio, true); }, 400);
+
+  /* ===== 羌语：听音选字（qiang-listen）===== */
+  } else if (ex.type === 'qiang-listen') {
+    var laudioEsc = ex.audio ? ex.audio.replace(/'/g, "\\'") : '';
+    html += '<div class="audio-play-big" onclick="playAudio(\'' + laudioEsc + '\', true)">🔊</div>';
+    html += '<div class="audio-replay" onclick="playAudio(\'' + laudioEsc + '\', true)"><span>🔄</span> 点击重听</div>';
+    html += '<div class="qiang-choice-list">';
+    ex.options.forEach(function(opt, i) {
+      var optImgHtml = renderQiangImg(opt, '36px');
+      html += '<div class="qiang-choice-card" onclick="selectQiangOption(this)" data-idx="' + i + '">';
+      html += '<span class="qiang-choice-key">' + String.fromCharCode(65+i) + '</span>';
+      html += '<span class="qiang-choice-img">' + optImgHtml + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    setTimeout(function(){ playAudio(ex.audio, true); }, 400);
+
+  /* ===== 藏语：看字选音（tibetan-read）===== */
+  } else if (ex.type === 'tibetan-read') {
+    html += '<div class="tibetan-letter-display"';
+    if (ex.audio) {
+      var traudioEsc = ex.audio.replace(/'/g, "\\'");
+      html += ' onclick="playAudio(\'' + traudioEsc + '\')"';
+    }
+    html += '>' + ex.text + '</div>';
+    if (ex.audio) {
+      html += '<div class="qiang-letter-tap-hint">👆 点击字母听发音</div>';
+    }
+    var opts = shuffleArr(ex.options);
+    html += '<div class="qiang-choice-list">';
+    opts.forEach(function(opt, i) {
+      var valEsc = opt.replace(/'/g, '&#39;');
+      html += '<div class="qiang-choice-card" onclick="selectTibetanOption(this)" data-val="' + valEsc + '">';
+      html += '<span class="qiang-choice-key">' + String.fromCharCode(65+i) + '</span>';
+      html += '<span class="qiang-choice-text">' + opt + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    if (ex.audio) {
+      setTimeout(function(){ playAudio(ex.audio, true); }, 400);
+    }
+
+  /* ===== 藏语：听音选字 / 问答（tibetan-listen）===== */
+  } else if (ex.type === 'tibetan-listen') {
+    if (ex.audio) {
+      var tlaudioEsc = ex.audio.replace(/'/g, "\\'");
+      html += '<div class="audio-play-big" onclick="playAudio(\'' + tlaudioEsc + '\', true)">🔊</div>';
+      html += '<div class="audio-replay" onclick="playAudio(\'' + tlaudioEsc + '\', true)"><span>🔄</span> 点击重听</div>';
+    }
+    var opts2 = shuffleArr(ex.options);
+    html += '<div class="qiang-choice-list">';
+    opts2.forEach(function(opt, i) {
+      var valEsc = opt.replace(/'/g, '&#39;');
+      html += '<div class="qiang-choice-card" onclick="selectTibetanOption(this)" data-val="' + valEsc + '">';
+      html += '<span class="qiang-choice-key">' + String.fromCharCode(65+i) + '</span>';
+      html += '<span class="qiang-choice-text">' + opt + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    if (ex.audio) {
+      setTimeout(function(){ playAudio(ex.audio, true); }, 400);
+    }
+  }
+
+  body.innerHTML = html;
+  body.scrollTop = 0;
+
+  if (ex.type === 'fill-blank') {
+    setTimeout(function() {
+      var inputs = document.querySelectorAll('.fill-blank-input');
+      inputs.forEach(function(inp) {
+        inp.addEventListener('input', updateFillBlankBtn);
+        inp.addEventListener('keydown', function(ev) {
+          if (ev.key === 'Enter') {
+            ev.preventDefault();
+            var cb = document.getElementById('lesson-check-btn');
+            if (cb && !cb.classList.contains('btn-gray')) cb.click();
+          }
+        });
+      });
+      updateFillBlankBtn();
+    }, 30);
+  }
+
+  if (traditionalMode && initConverters()) {
+    walkTextNodes(body, function(node) { node.textContent = stConverter(node.textContent); });
+  }
+}
+
+/* ===== 选项选择 ===== */
+function selectChoice(el) {
+  if (answerLocked) return;                              // ✅ 新增
+  el.parentElement.querySelectorAll('.choice-card').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedAnswer = el.dataset.correct === 'true';
+  document.getElementById('lesson-check-btn').className = 'duo-btn btn-green footer-btn';
+}
+
+function selectAudioOption(el) {
+  if (answerLocked) return;                              // ✅ 新增
+  el.parentElement.querySelectorAll('.audio-opt-card').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedAnswer = el.dataset.correct === 'true';
+  playAudio(el.dataset.audio, true);
+  document.getElementById('lesson-check-btn').className = 'duo-btn btn-green footer-btn';
+}
+
+function selectTAOption(el) {
+  if (answerLocked) return;                              // ✅ 新增
+  el.parentElement.querySelectorAll('.ta-opt').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedAnswer = el.dataset.correct === 'true';
+  playAudio(el.dataset.audio, true);
+  document.getElementById('lesson-check-btn').className = 'duo-btn btn-green footer-btn';
+}
+
+/* ===== 羌语选项选择 ===== */
+function selectQiangOption(el) {
+  if (answerLocked) return;                              // ✅ 新增
+  el.parentElement.querySelectorAll('.qiang-choice-card').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedAnswer = parseInt(el.dataset.idx) === currentExercises[currentStep].answer;
+  document.getElementById('lesson-check-btn').className = 'duo-btn btn-green footer-btn';
+}
+
+/* ===== 藏语选项选择（按文本值匹配） ===== */
+function selectTibetanOption(el) {
+  if (answerLocked) return;                              // ✅ 新增
+  el.parentElement.querySelectorAll('.qiang-choice-card').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedAnswer = el.dataset.val === currentExercises[currentStep].answer;
+  document.getElementById('lesson-check-btn').className = 'duo-btn btn-green footer-btn';
+}
+
+/* ===== 翻译题：提示词切换 ===== */
+function toggleHintWord(el) {
+  var wasActivated = el.classList.contains('activated');
+  document.querySelectorAll('.hint-word.activated').forEach(function(w) {
+    w.classList.remove('activated');
+  });
+  if (!wasActivated) el.classList.add('activated');
+}
+
+/* ===== 翻译题：字块操作 ===== */
+function addBlock(idx) {
+  if (answerLocked) return;                              // ✅ 新增
+  if (translationBlockState[idx].used) return;
+  translationBlockState[idx].used = true;
+  var block = translationBlockState[idx].text;
+  translationAnswer.push(block);
+
+  var area = document.getElementById('answer-area');
+  area.classList.add('has-content');
+  area.innerHTML = '';
+  translationAnswer.forEach(function(b, i) {
+    area.innerHTML += '<div class="answer-block" onclick="removeBlock(' + i + ')">' + renderSmallChar(b) + '</div>';
+  });
+
+  var bankEl = document.querySelector('.bank-block[data-idx="' + idx + '"]');
+  if (bankEl) bankEl.classList.add('used');
+
+  document.getElementById('lesson-check-btn').className = 'duo-btn btn-green footer-btn';
+
+  var ex = currentExercises[currentStep];
+  if (ex.blockAudio) playAudio(block.replace(/\*/g, ''));
+
+  if (traditionalMode && initConverters()) {
+    walkTextNodes(area, function(node) { node.textContent = stConverter(node.textContent); });
+  }
+}
+
+function removeBlock(answerIdx) {
+  if (answerLocked) return;                              // ✅ 新增
+  var ex = currentExercises[currentStep];
+  var block = translationAnswer[answerIdx];
+
+  for (var i = 0; i < translationBlockState.length; i++) {
+    if (translationBlockState[i].used && translationBlockState[i].text === block) {
+      translationBlockState[i].used = false;
+      var el = document.querySelector('.bank-block[data-idx="' + i + '"]');
+      if (el) el.classList.remove('used');
+      break;
+    }
+  }
+
+  translationAnswer.splice(answerIdx, 1);
+
+  var area = document.getElementById('answer-area');
+  if (translationAnswer.length === 0) {
+    area.classList.remove('has-content');
+    area.innerHTML = '<div class="answer-placeholder">点击下方字块组成答案</div>';
+    document.getElementById('lesson-check-btn').className = 'duo-btn btn-gray footer-btn';
+  } else {
+    area.innerHTML = '';
+    translationAnswer.forEach(function(b, i) {
+      area.innerHTML += '<div class="answer-block" onclick="removeBlock(' + i + ')">' + renderSmallChar(b) + '</div>';
+    });
+  }
+
+  if (ex.blockAudio) playAudio(block.replace(/\*/g, ''));
+
+  if (traditionalMode && initConverters()) {
+    walkTextNodes(area, function(node) { node.textContent = stConverter(node.textContent); });
+  }
+}
+
+/* ===== 检查答案 ===== */
+function checkAnswer() {
+  var checkBtn = document.getElementById('lesson-check-btn');
+  if (answerLocked) return;                                     // ✅ 新增
+  if (checkBtn.classList.contains('btn-gray')) return;
+  answerLocked = true;                                          // ✅ 新增
+
+  var ex = currentExercises[currentStep];
+  var feedback = document.getElementById('footer-feedback');
+  var isCorrect = false;
+  var correctText = '';
+
+  if (ex.type === 'translation') {
+    var userAnswer = translationAnswer.join('').replace(/[，。！？、,.!?；;：:*]/g, '');
+    var strippedAnswers = ex.answers.map(function(a) { return a.replace(/[，。！？、,.!?；;：:*]/g, ''); });
+    isCorrect = strippedAnswers.indexOf(userAnswer) !== -1;
+    correctText = ex.answers[0];
+  } else if (ex.type === 'fill-blank') {
+    var fbsInputs = document.querySelectorAll('.fill-blank-input');
+    var allOk = true;
+    fbsInputs.forEach(function(inp, i) {
+      var val = inp.value.trim().replace(/[，。！？、,.!?；;：:*\s]/g, '');
+      var candidates = (ex.blanks && ex.blanks[i]) || [];
+      if (candidates.indexOf(val) === -1) allOk = false;
+    });
+    isCorrect = allOk;
+    correctText = (ex.blanks || []).map(function(arr){ return arr[0]; }).join(' / ');
+    document.querySelectorAll('.fill-blank-input').forEach(function(inp) { inp.disabled = true; });
+  } else if (ex.type === 'audio-order') {
+    isCorrect = orderAnswer.join('') === ex.answer.join('');
+    correctText = ex.answer.join(' ');
+  } else if (ex.type === 'qiang-read') {
+    isCorrect = selectedAnswer;
+    correctText = ex.options[ex.answer];
+  } else if (ex.type === 'qiang-listen') {
+    isCorrect = selectedAnswer;
+    correctText = renderQiangImg(ex.options[ex.answer], '24px');
+  } else if (ex.type === 'tibetan-read' || ex.type === 'tibetan-listen') {
+    isCorrect = selectedAnswer;
+    correctText = ex.answer;
+  } else {
+    isCorrect = selectedAnswer;
+    if (ex.options) {
+      var correct = ex.options.find(function(o){ return o.correct; });
+      correctText = correct ? correct.text : '';
+    }
+  }
+
+  if (isCorrect) {
+    userData.totalCorrect++;
+    saveData();
+    feedback.className = 'footer-feedback correct';
+    feedback.innerHTML = '<span class="feedback-icon">✅</span><span>太棒了！</span>';
+    feedback.style.visibility = 'visible';
+    checkBtn.className = 'duo-btn btn-green footer-btn';
+    checkBtn.textContent = '继续';
+    checkBtn.onclick = nextStep;
+    document.querySelectorAll('.choice-card.selected,.audio-opt-card.selected,.ta-opt.selected,.qiang-choice-card.selected').forEach(function(c){ c.classList.add('correct'); });
+  } else {
+    feedback.className = 'footer-feedback wrong';
+    feedback.innerHTML = '<span class="feedback-icon">❌</span><span>正确答案：' + correctText + '</span>';
+    feedback.style.visibility = 'visible';
+    checkBtn.className = 'duo-btn btn-red footer-btn';
+    checkBtn.textContent = '继续';
+    checkBtn.onclick = nextStep;
+    lessonHearts--;
+    wrongCount++;
+    userData.totalWrong++;
+    userData.hearts = Math.max(0, userData.hearts - 1);
+    saveData();
+    reviewQueue.push(ex);
+    document.getElementById('lesson-hearts-count').textContent = lessonHearts;
+    document.querySelectorAll('.choice-card.selected,.audio-opt-card.selected,.ta-opt.selected,.qiang-choice-card.selected').forEach(function(c){ c.classList.add('wrong'); });
+    /* 标记正确选项 */
+    if (ex.type === 'qiang-read' || ex.type === 'qiang-listen') {
+      var correctEl = document.querySelector('.qiang-choice-card[data-idx="' + ex.answer + '"]');
+      if (correctEl) correctEl.classList.add('correct');
+    } else if (ex.type === 'tibetan-read' || ex.type === 'tibetan-listen') {
+      var correctEl2 = document.querySelector('.qiang-choice-card[data-val="' + ex.answer + '"]');
+      if (correctEl2) correctEl2.classList.add('correct');
+    } else {
+      document.querySelectorAll('[data-correct="true"]').forEach(function(c){ c.classList.add('correct'); });
+    }
+
+    if (lessonHearts <= 0) {
+      setTimeout(function() {
+        showPopup('💔', '生命用完了！', '你的心都用光了，休息一下再来吧。\n可用宝石补充生命。', [
+          { text: '用 💎350 补充', class: 'btn-green', action: 'refillHearts()' },
+          { text: '去商店', class: 'btn-white', action: "closeLesson();showScreen('shop')" }
+        ]);
+      }, 500);
+    }
+  }
+}
+
+function refillHearts() {
+  if (userData.gems < 350) {
+    showPopup('💎', '宝石不足', '当前宝石不足 350，无法补充生命。\n前往商店了解更多。', [
+      { text: '去商店', class: 'btn-green', action: "closePopup();closeLesson();showScreen('shop')" },
+      { text: '关闭', class: 'btn-white', action: 'closePopup()' }
+    ]);
+    return;
+  }
+  closePopup();
+  userData.gems -= 350;
+  userData.hearts = 5;
+  lessonHearts = 5;
+  saveData();
+  document.getElementById('lesson-hearts-count').textContent = lessonHearts;
+  updateTopbar();
+  toast('❤️ 生命已补满！');
+}
+
+function nextStep() {
+  if (!answerLocked) return;    // ✅ 新增
+  answerLocked = false;         // ✅ 新增
+  currentStep++;  if (currentStep >= currentExercises.length) {
+    if (reviewQueue.length > 0) {
+      totalCompleted += currentExercises.length;
+      currentExercises = reviewQueue.slice();
+      reviewQueue = [];
+      currentStep = 0;
+      inReview = true;
+      toast('📝 复习错题');
+      updateProgress();
+      renderExercise();
+    } else {
+      showComplete();
+    }
+  } else {
+    updateProgress();
+    renderExercise();
+  }
+}
+
+function updateProgress() {
+  var totalEstimate = totalCompleted + currentExercises.length;
+  lessonProgress = totalEstimate > 0 ? (totalCompleted + currentStep) / totalEstimate * 100 : 0;
+  document.getElementById('lesson-progress').style.width = lessonProgress + '%';
+}
+
+function showComplete() {
+  document.getElementById('lesson-progress').style.width = '100%';
+
+  /* 判断是否重复练习（必须在写入 completedLessons 之前判断） */
+  var isRepeat = !!completedLessons[currentLessonId];
+
+  if (currentLessonId) completedLessons[currentLessonId] = true;
+  saveData();
+  updatePathNodes();
+
+  var accuracy = originalLength > 0 ? Math.max(0, Math.round((1 - wrongCount / originalLength) * 100)) : 100;
+
+  /* 按正确率和是否重复练习计算奖励 */
+  var earnedXP = 0, earnedGems = 0;
+  if (isRepeat) {
+    if (accuracy === 100) { earnedXP = 10; earnedGems = 10; }
+    else                  { earnedXP = 0;  earnedGems = 5;  }
+  } else {
+    if (accuracy === 100)       { earnedXP = 50; earnedGems = 100; }
+    else if (accuracy >= 90)    { earnedXP = 50; earnedGems = 80;  }
+    else if (accuracy >= 80)    { earnedXP = 30; earnedGems = 50;  }
+    else if (accuracy >= 60)    { earnedXP = 10; earnedGems = 20;  }
+    else if (accuracy >= 50)    { earnedXP = 0;  earnedGems = 5;   }
+    else                        { earnedXP = 0;  earnedGems = 1;   }
+  }
+
+  currentLessonReward.xp = earnedXP;
+  currentLessonReward.gems = earnedGems;
+  currentLessonReward.isRepeat = isRepeat;
+
+  var body = document.getElementById('lesson-body');
+  body.innerHTML = '<div class="lesson-complete">' +
+    '<div class="complete-icon">🎉</div>' +
+    '<div class="complete-title">课程完成！</div>' +
+    '<div class="complete-stats">' +
+      '<div class="complete-stat"><div class="complete-stat-icon">⚡</div><div class="complete-stat-val">+' + earnedXP + '</div><div class="complete-stat-label">经验值</div></div>' +
+      '<div class="complete-stat"><div class="complete-stat-icon">💎</div><div class="complete-stat-val">+' + earnedGems + '</div><div class="complete-stat-label">宝石</div></div>' +
+      '<div class="complete-stat"><div class="complete-stat-icon">🎯</div><div class="complete-stat-val">' + accuracy + '%</div><div class="complete-stat-label">正确率</div></div>' +
+    '</div>' +
+    '<button class="duo-btn btn-green" style="width: 100%; max-width: 280px; margin-top: 10px;" onclick="finishLesson()">完成</button>' +
+  '</div>';
+
+  var footer = document.getElementById('lesson-footer');
+  footer.style.display = 'none';
+
+  if (traditionalMode && initConverters()) {
+    walkTextNodes(body, function(node) { node.textContent = stConverter(node.textContent); });
+  }
+}
+
+function updateStreak() {
+  var today = new Date();
+  var todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+  if (userData.lastActiveDate === todayStr) return;
+  if (userData.lastActiveDate) {
+    var last = new Date(userData.lastActiveDate.replace(/-/g, '/'));
+    var diffDays = Math.round((today - last) / 86400000);
+    if (diffDays === 1) {
+      userData.streak++;
+    } else if (diffDays > 1) {
+      userData.streak = 1;
+    }
+  } else {
+    userData.streak = 1;
+  }
+  userData.lastActiveDate = todayStr;
+}
+
+function finishLesson() {
+  document.getElementById('lesson-footer').style.display = '';
+  document.getElementById('toast').classList.remove('show');
+  document.getElementById('screen-lesson').classList.remove('active');
+
+  var gainedXP = currentLessonReward.xp;
+  var gainedGems = currentLessonReward.gems;
+
+  userData.xp += gainedXP;
+  userData.gems += gainedGems;
+  userData.monthlyXP += gainedXP;
+  userData.dailyXP += gainedXP;
+  userData.lessonsCompleted++;
+  userData.monthlyLessons++;
+  userData.dailyLessons++;
+  updateStreak();
+  saveData();
+  showScreen('home');
+  updateTopbar();
+  updateProfile();
+  updateShop();
+
+  var popupDesc = '恭喜你完成了课程！';
+  if (gainedXP === 0 && gainedGems === 0) {
+    popupDesc = '完成课程。';
+  } else if (gainedXP === 0) {
+    popupDesc = '恭喜你完成了课程！\n获得 ' + gainedGems + ' 颗宝石。';
+  } else {
+    popupDesc = '恭喜你完成了课程！\n获得 ' + gainedXP + ' XP 和 ' + gainedGems + ' 颗宝石。';
+  }
+
+  showPopup('🏆', '获得奖励！', popupDesc, [
+    { text: '太棒了', class: 'btn-green', action: 'closePopup()' }
+  ]);
+}
+
+/* ===== 路径节点点击 ===== */
+/* 课程的解锁前置（未列出的课程默认直接解锁） */
+/* 从每门语言的 lessons 数组顺序自动生成解锁链：第 N 课的前置是第 N-1 课 */
+var LESSON_PREREQ = (function() {
+  var p = {};
+  Object.keys(LANGS).forEach(function(langId) {
+    var arr = LANGS[langId].lessons || [];
+    for (var i = 1; i < arr.length; i++) {
+      p[arr[i]] = arr[i-1];
+    }
+  });
+  return p;
+})();
+function pathNodeClick(lessonId) {
+  var prereq = LESSON_PREREQ[lessonId];
+  if (prereq && !completedLessons[prereq]) {
+    lockedLesson();
+  } else {
+    startLesson(lessonId);
+  }
+}
+
+/* ===== 自动生成路径节点 ===== */
+function renderPath() {
+  var container = document.getElementById('path-container');
+  if (!container) return;
+  var info = LANGS[currentLang];
+  if (!info || !info.lessons) { container.innerHTML = ''; return; }
+  var lessons = info.lessons;
+  /* 找出已完成的最后一课，它后面那课是 active */
+  var lastCompletedIdx = -1;
+  lessons.forEach(function(lid, i) { if (completedLessons[lid]) lastCompletedIdx = i; });
+
+  var html = '';
+  var lastChapter = '';
+  lessons.forEach(function(lid, i) {
+    var course = courses[lid];
+    if (!course) return;
+    /* 章节标签：与上一课章节不同就插一个 */
+    if (course.chapter && course.chapter !== lastChapter) {
+      html += '<div class="path-section-label">' + course.chapter + '</div>';
+      lastChapter = course.chapter;
+    }
+    /* 连接线：第一课之后每课前面都加 */
+    if (i > 0) {
+      var connActive = completedLessons[lessons[i-1]] ? ' active' : '';
+      html += '<div class="path-connector' + connActive + '"></div>';
+    }
+    /* 节点状态 */
+    var state = 'locked', icon = '🔒';
+    if (completedLessons[lid]) { state = 'completed'; icon = '✓'; }
+    else if (i === lastCompletedIdx + 1) { state = 'active'; icon = '🔑'; }
+    /* 左右偏移（蛇形） */
+    var offset = (i % 2 === 1) ? ' path-offset-left' : '';
+    /* 生成节点 */
+    var titleEsc = String(course.title || '').replace(/'/g, "\\'");
+    html += '<div class="lesson-node' + offset + '" id="path-node-' + lid + '" onclick="pathNodeClick(\'' + lid + '\')">';
+    html += '<div class="lesson-tooltip">' + (course.title || '') + '</div>';
+    html += '<div class="lesson-circle ' + state + '">';
+    html += '<span class="lesson-icon">' + icon + '</span>';
+    html += '</div></div>';
+  });
+  /* 尾部占位（方便滚动） */
+  html += '<div style="height: 40px;"></div>';
+  container.innerHTML = html;
+
+  if (traditionalMode && initConverters()) {
+    walkTextNodes(container, function(node) { node.textContent = stConverter(node.textContent); });
+  }
+}
+
+/* 兼容旧调用点：任何地方调 updatePathNodes 都重新渲染路径 */
+function updatePathNodes() { renderPath(); }
+
+/* ===== 编辑资料 ===== */
+function editProfile() {
+  editingAvatar = profileAvatar;
+
+  var card = document.getElementById('popup-card');
+  var html = '<div class="popup-title" style="color:var(--text);">编辑资料</div>';
+  html += '<div class="edit-profile-popup">';
+
+  html += '<div class="edit-section-label">头像</div>';
+  html += '<div class="avatar-grid">';
+  avatarOptions.forEach(function(a) {
+    var sel = a === editingAvatar ? ' selected' : '';
+    html += '<div class="avatar-option' + sel + '" onclick="selectAvatar(this,\'' + a + '\')">' + a + '</div>';
+  });
+  html += '</div>';
+
+  html += '<div class="edit-section-label">昵称</div>';
+  html += '<input type="text" class="edit-name-input" id="edit-name-input" value="' + profileName + '" maxlength="12" placeholder="输入昵称">';
+
+  html += '</div>';
+  html += '<div class="popup-btns">';
+  html += '<button class="duo-btn btn-green" onclick="saveProfile()">保存</button>';
+  html += '<button class="duo-btn btn-white" onclick="closePopup()">取消</button>';
+  html += '</div>';
+
+  card.innerHTML = html;
+  document.getElementById('popup-overlay').classList.add('show');
+
+  if (traditionalMode && initConverters()) {
+    walkTextNodes(card, function(node) { node.textContent = stConverter(node.textContent); });
+  }
+}
+
+function selectAvatar(el, avatar) {
+  document.querySelectorAll('.avatar-option').forEach(function(a) {
+    a.classList.remove('selected');
+  });
+  el.classList.add('selected');
+  editingAvatar = avatar;
+}
+
+function saveProfile() {
+  var nameInput = document.getElementById('edit-name-input');
+  var newName = nameInput.value.trim();
+  if (!newName) {
+    toast('请输入昵称');
+    nameInput.focus();
+    return;
+  }
+  profileName = newName;
+  profileAvatar = editingAvatar;
+  saveData();
+
+  document.querySelector('.profile-avatar').textContent = profileAvatar;
+  document.querySelector('.profile-name').textContent = profileName;
+
+  closePopup();
+  toast('资料已更新');
+}
+
+/* ===== 重置进度 ===== */
+function resetProgress() {
+  showPopup('⚠️', '确定重置进度？', '所有学习记录、宝石、红心、已完成课程都将清空，\n此操作不可撤销！', [
+    { text: '确认重置', class: 'btn-red', action: 'confirmReset()' },
+    { text: '取消', class: 'btn-white', action: 'closePopup()' }
+  ]);
+}
+
+function confirmReset() {
+  closePopup();
+  localStorage.removeItem(STORAGE_KEY);
+  userData = {
+    streak: 1, xp: 0, gems: 1000, hearts: 5,
+    lessonsCompleted: 0, totalCorrect: 0, totalWrong: 0,
+    monthlyLessons: 0, monthlyXP: 0, dailyXP: 0, dailyLessons: 0,
+    lastActiveDate: null
+  };
+  completedLessons = {};
+  soundEnabled = true;
+  traditionalMode = false;
+  currentLang = 'dingzhou';
+  activeLangs = ['dingzhou'];
+  profileName = '请输入昵称';
+  profileAvatar = '🐼';
+  /* 更新 UI */
+  switchLang('dingzhou');
+  var soundToggle = document.querySelector('.toggle-switch[data-key="sound"]');
+  if (soundToggle) soundToggle.classList.add('on');
+  var tradToggle = document.querySelector('.toggle-switch[data-key="traditional"]');
+  if (tradToggle) tradToggle.classList.remove('on');
+  if (initConverters()) revertSimplified();
+  var avatarEl = document.querySelector('.profile-avatar');
+  var nameEl = document.querySelector('.profile-name');
+  if (avatarEl) avatarEl.textContent = profileAvatar;
+  if (nameEl) nameEl.textContent = profileName;
+  /* 重置路径：直接重新渲染（数据已清空，renderPath 会自动把所有节点画成未完成） */
+  renderPath();
+  updateTopbar();
+  updateProfile();
+  updateShop();
+  toast('进度已重置');
+}
+
+/* ===== 设置开关 ===== */
+function toggleSetting(el) {
+  var toggle = el.querySelector('.toggle-switch');
+  if (!toggle) return;
+  toggle.classList.toggle('on');
+  var key = toggle.dataset.key;
+  var state = toggle.classList.contains('on');
+
+  if (key === 'traditional') {
+    traditionalMode = state;
+    saveData();
+    if (state) {
+      applyTraditional();
+      toast('已切換為繁體字顯示');
+    } else {
+      revertSimplified();
+      toast('已切换为简体字显示');
+    }
+  } else if (key === 'sound') {
+    soundEnabled = state;
+    saveData();
+    toast('发音提示' + (state ? ' 已开启' : ' 已关闭'));
+  } else {
+    var labels = { dark: '深色模式' };
+    toast((labels[key] || key) + (state ? ' 已开启' : ' 已关闭'));
+  }
+}
+
+/* ===== 商店 ===== */
+function shopBuy(item) {
+  var items = {
+    hearts: { name: '补充生命', price: 350 },
+    freeze: { name: '连续天数冻结', price: 0 },
+    timer: { name: '计时挑战', price: 0 },
+    gems: { name: '充值宝石', price: 0 }
+  };
+  var info = items[item];
+  if (item !== 'hearts') {
+    toast('功能开发中');
+    return;
+  }
+  showPopup('🛒', '确认购买', info.name + '\n价格：' + info.price + ' 💎', [
+    { text: '确认购买', class: 'btn-green', action: 'confirmBuy(\'' + item + '\',' + info.price + ')' },
+    { text: '取消', class: 'btn-white', action: 'closePopup()' }
+  ]);
+}
+
+function confirmBuy(item, price) {
+  closePopup();
+  if (userData.gems < price) {
+    toast('💎 宝石不足！');
+    return;
+  }
+  userData.gems -= price;
+  if (item === 'hearts') {
+    userData.hearts = 5;
+    toast('❤️ 生命已补满！');
+  } else {
+    toast('✅ 购买成功！');
+  }
+  saveData();
+  updateTopbar();
+}
+
+/* ===== UI 数据同步 ===== */
+function updateTopbar() {
+  var items = document.querySelectorAll('#topbar .topbar-stats .stat-item');
+  if (items.length >= 3) {
+    items[0].innerHTML = '<span class="stat-icon stat-fire">🔥</span><span>' + userData.streak + '</span>';
+    items[1].innerHTML = '<span class="stat-icon stat-gem">💎</span><span>' + userData.gems + '</span>';
+    items[2].innerHTML = '<span class="stat-icon stat-heart">❤️</span><span>' + userData.hearts + '</span>';
+  }
+}
+
+function updateProfile() {
+  var nums = document.querySelectorAll('#screen-profile .stat-box-num');
+  if (nums.length >= 4) {
+    nums[0].textContent = userData.streak;
+    nums[1].textContent = userData.xp;
+    nums[2].textContent = Object.keys(completedLessons).length;
+    nums[3].textContent = userData.gems;
+  }
+  /* 动态渲染学习中的语言列表 */
+  var listEl = document.getElementById('profile-lang-list');
+  if (listEl) {
+    var html = '';
+    activeLangs.forEach(function(langId) {
+      var info = LANGS[langId];
+      if (!info) return;
+      var total = info.lessons.length;
+      var done = info.lessons.filter(function(l){ return completedLessons[l]; }).length;
+      var pct = total > 0 ? Math.round(done / total * 100) : 0;
+      html += '<div class="lang-progress-item" onclick="selectLangItem(\'' + langId + '\')" style="cursor:pointer;">';
+      html += '<div class="lp-flag">' + info.flag + '</div>';
+      html += '<div class="lp-info">';
+      html += '<div class="lp-name">' + info.name + '</div>';
+      html += '<div class="lp-bar"><div class="lp-bar-fill" style="width:' + pct + '%;"></div></div>';
+      html += '</div>';
+      html += '<div class="lp-crown">👑' + done + '</div>';
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+    if (traditionalMode && initConverters()) {
+      walkTextNodes(listEl, function(node) { node.textContent = stConverter(node.textContent); });
+    }
+  }
+  /* 每月统计 */
+  var ml = document.getElementById('stat-monthly-lessons');
+  var mx = document.getElementById('stat-monthly-xp');
+  var ac = document.getElementById('stat-accuracy');
+  if (ml) ml.textContent = userData.monthlyLessons;
+  if (mx) mx.textContent = userData.monthlyXP;
+  if (ac) {
+    var totalAttempts = userData.totalCorrect + userData.totalWrong;
+    ac.textContent = totalAttempts > 0 ? Math.round(userData.totalCorrect / totalAttempts * 100) + '%' : '—';
+  }
+  /* 成就状态 */
+  var achCards = document.querySelectorAll('#screen-profile .achievement-card');
+  achCards.forEach(function(c) { c.classList.add('locked'); });
+  if (userData.streak >= 3 && achCards[0]) achCards[0].classList.remove('locked');
+  if (userData.lessonsCompleted >= 10 && achCards[1]) achCards[1].classList.remove('locked');
+  if (userData.totalCorrect >= 20 && achCards[2]) achCards[2].classList.remove('locked');
+}
+
+function updateShop() {
+  var xpBar = document.getElementById('task-xp-bar');
+  var xpText = document.getElementById('task-xp-text');
+  if (xpBar && xpText) {
+    var pct = Math.min(100, Math.round(userData.dailyXP / 50 * 100));
+    xpBar.style.width = pct + '%';
+    xpText.textContent = userData.dailyXP + '/50';
+  }
+  var lessonBar = document.getElementById('task-lesson-bar');
+  var lessonText = document.getElementById('task-lesson-text');
+  if (lessonBar && lessonText) {
+    var pct2 = Math.min(100, Math.round(userData.dailyLessons / 3 * 100));
+    lessonBar.style.width = pct2 + '%';
+    lessonText.textContent = userData.dailyLessons + '/3';
+  }
+}
+
+/* ===== 初始化 ===== */
+document.addEventListener('DOMContentLoaded', function() {
+  /* 1. 加载已保存的数据 */
+  loadData();
+
+  /* 2. 应用已保存的设置到 UI */
+  /* 发音开关 */
+  var soundToggle = document.querySelector('.toggle-switch[data-key="sound"]');
+  if (soundToggle) soundToggle.classList.toggle('on', soundEnabled);
+  /* 繁体开关 */
+  var tradToggle = document.querySelector('.toggle-switch[data-key="traditional"]');
+  if (tradToggle) tradToggle.classList.toggle('on', traditionalMode);
+  /* 繁体模式应用 */
+  if (traditionalMode && initConverters()) {
+    applyTraditional();
+  }
+  /* 个人资料 */
+  var avatarEl = document.querySelector('.profile-avatar');
+  var nameEl = document.querySelector('.profile-name');
+  if (avatarEl) avatarEl.textContent = profileAvatar;
+  if (nameEl) nameEl.textContent = profileName;
+
+  /* 3. 根据已完成课程更新路径节点 */
+  updatePathNodes();
+
+  /* 4. 恢复语言选择 */
+  switchLang(currentLang);
+
+  /* 5. 刷新所有 UI 数据 */
+  updateTopbar();
+  updateProfile();
+  updateShop();
+
+    /* 等字体加载完再关闭 welcome（逐个加载 + 进度条 + 自动重试） */
+  var welcomeStart = Date.now();
+  var fontNames = ['TH-Tshyn-P0', 'TH-Tshyn-P1', 'TH-Tshyn-P2', 'TH-Tshyn-P16'];
+  var loadedCount = 0;
+  var totalCount = fontNames.length;
+
+  /* 进度条状态 */
+  var welcomeProgressCurrent = 0;
+  var welcomeProgressReal = 0;
+  var welcomeProgressCap = 5;
+
+  function setWelcomeProgress(real) {
+    welcomeProgressReal = Math.min(100, real);
+    welcomeProgressCap = welcomeProgressReal + 12;
+    if (welcomeProgressCurrent < welcomeProgressReal) {
+      welcomeProgressCurrent = welcomeProgressReal;
+      applyWelcomeProgress();
+    }
+  }
+    function applyWelcomeProgress() {
+    var el = document.getElementById('welcome-progress-fill');
+    if (el) el.style.width = welcomeProgressCurrent + '%';
+    /* 同步更新百分比文字（除非被 updateStatus 锁定） */
+    if (!welcomeStatusLocked) {
+      var statusEl = document.getElementById('welcome-status');
+      if (statusEl) statusEl.textContent = '正在加载必要文件 ' + Math.round(welcomeProgressCurrent) + '%';
+    }
+  }
+  /* 虚拟爬升：真进度卡住时进度条也慢慢走，上限为真进度 + 12% */
+  setInterval(function() {
+    if (welcomeProgressCurrent < welcomeProgressCap && welcomeProgressCurrent < 99) {
+      welcomeProgressCurrent = Math.min(welcomeProgressCap, welcomeProgressCurrent + 0.4);
+      applyWelcomeProgress();
+    }
+  }, 350);
+
+  var welcomeStatusLocked = false;
+  function updateStatus(text) {
+    welcomeStatusLocked = true;
+    var el = document.getElementById('welcome-status');
+    if (el) el.textContent = text;
+  }
+
+  function loadOne(name, attempt) {
+    attempt = attempt || 0;
+       return document.fonts.load('20px "' + name + '"', '你好').then(function() {
+      loadedCount++;
+      var realPct = (loadedCount / totalCount) * 85;
+      setWelcomeProgress(realPct);
+      return name;
+    }).catch(function(err) {
+      if (attempt < 2) {
+        return new Promise(function(resolve) {
+          setTimeout(function() { resolve(loadOne(name, attempt + 1)); }, 1500);
+        });
+      }
+      throw err;
+    });
+  }
+
+  var fontReady;
+  if (document.fonts && document.fonts.load) {
+    setWelcomeProgress(0);
+    fontReady = Promise.all(fontNames.map(function(n) { return loadOne(n, 0); }))
+      .then(function() {
+        setWelcomeProgress(100);
+        updateStatus('课程已就绪');
+        console.log('[字体] ✅ 全部加载成功');
+      })
+      .catch(function(err) {
+        updateStatus('字体加载失败');
+        var el = document.getElementById('welcome-status');
+        if (el) {
+          el.innerHTML = '字体加载失败，请检查网络后重试<br>' +
+            '<button onclick="location.reload()" style="margin-top:16px;padding:10px 30px;border:none;border-radius:12px;background:#fff;color:#58CC02;font-weight:700;font-size:16px;cursor:pointer;font-family:sans-serif;">重试</button>';
+        }
+        console.error('[字体] ❌ 加载失败:', err);
+        throw err;
+      });
+  } else {
+    fontReady = Promise.resolve();
+  }
+
+  fontReady.then(function() {
+    var elapsed = Date.now() - welcomeStart;
+    var extraWait = Math.max(0, 1000 - elapsed);
+    setTimeout(function() {
+      document.getElementById('welcome').classList.add('hide');
+    }, extraWait);
+  }).catch(function() {
+    /* 失败时 welcome 不消失，用户看到重试按钮 */
+  });
+});
+
+/* 阻止双击缩放 */
+document.addEventListener('touchend', function(e) {
+  var now = Date.now();
+  if (now - lastTouchEnd <= 300) e.preventDefault();
+  lastTouchEnd = now;
+}, false);
+var lastTouchEnd = 0;
+
+</script>
+
+
+</body>
+</html>
