@@ -19,6 +19,8 @@
 @font-face { font-family: 'TH-Tshyn-P2';  src: url('https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Tshyn-P2.ttf')  format('truetype'); font-display: block; }
 @font-face { font-family: 'TH-Tshyn-P16'; src: url('https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Tshyn-P16.ttf') format('truetype'); font-display: block; }
 @font-face { font-family: 'TH-Times';     src: url('https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Times.ttc')    format('truetype'); font-display: swap; }
+ /* ===== 羌文字体 ===== */
+@font-face { font-family: 'QiangFont'; src: url('font/v-hlhu-Regular.otf') format('opentype'); font-display: block; }
 
 /* ===== 彩色 Emoji 字体（仅 emoji 码位生效：unicode-range 限定，汉字/拉丁/藏文/箭头符号仍走 TH 字体栈）===== */
 @font-face {
@@ -3281,37 +3283,37 @@ hints:[{word:'市里*儿', meaning:'定州城区'},{word:'哩',meaning:'的'}],
       ]}
     ]
   },
-  'lesson-q1': {
+    'lesson-q1': {
     title: '元音（1）',
     chapter: '第一章 认识字母',
     icon: '🔤',
     lang: 'qiang',
-    intro: '学习羌语元音字母的认读和听辨。点击羌文字母可以听发音，选择对应的读音。',
+    intro: '学习羌语元音字母的认读和听辨。点击尔玛文字母可以听发音，选择对应的读音。',
     exercises: [
-      { type:'qiang-read', image:'1agei', audio:'agei',
+      { type:'qiang-read', text:'঄', audio:'agei',
         options:['a','e','u'], answer:0 },
-      { type:'qiang-read', image:'2ugun', audio:'ugun',
+      { type:'qiang-read', text:'঩', audio:'ugen',
         options:['a','e','u'], answer:2 },
-      { type:'qiang-read', image:'2tu', audio:'tu',
+      { type:'qiang-read', text:'৑঩', audio:'tu',
         options:['ta','te','tu'], answer:2 },
-      { type:'qiang-read', image:'2egen', audio:'egen',
+      { type:'qiang-read', text:'঑', audio:'egen',
         options:['a','e','u'], answer:1 },
-      { type:'qiang-read', image:'2te', audio:'2te',
+      { type:'qiang-read', text:'৑঑', audio:'te',
         options:['ta','te','tu'], answer:1 },
       { type:'qiang-listen', audio:'ugun', prompt:'选择你听到的字母',
-        options:['1agei','2egen','2ugun','1t'], answer:2 },
+        options:['঄','঑','঩','৑'], answer:2 },
       { type:'qiang-listen', audio:'agei', prompt:'选择你听到的字母',
-        options:['1agei','2egen','2ugun','1t'], answer:0 },
+        options:['঄','঑','঩','৑'], answer:0 },
       { type:'qiang-listen', audio:'u', prompt:'选择你听到的音节',
-        options:['2tu','1a','2u','2te'], answer:2 },
+        options:['৑঩','঄','঩','৑঑'], answer:2 },
       { type:'qiang-listen', audio:'egen', prompt:'选择你听到的字母',
-        options:['2egen','1t','1agei','2ugun'], answer:0 },
+        options:['঑','৑','঄','঩'], answer:0 },
       { type:'qiang-listen', audio:'e-qiang', prompt:'选择你听到的音节',
-        options:['2te','2u','2e','1agei'], answer:2 },
+        options:['৑঑','঩','঑','঄'], answer:2 },
       { type:'qiang-listen', audio:'a', prompt:'选择你听到的音节',
-        options:['1a','2te','2u','2e'], answer:0 },
+        options:['঄','৑঑','঩','঑'], answer:0 },
       { type:'qiang-listen', audio:'agei', prompt:'选择你听到的字母',
-        options:['1agei','2egen','2ugun','1t'], answer:0 }
+        options:['঄','঑','঩','৑'], answer:0 }
     ]
   },
   /* ===== 藏语课程 ===== */
@@ -3532,18 +3534,10 @@ function renderOrderArea() {
   document.getElementById('lesson-check-btn').className = 'duo-btn ' + (full ? 'btn-green' : 'btn-gray') + ' footer-btn';
 }
 
-/* ===== 羌语图片渲染 ===== */
-function renderQiangImg(imgSpec, height) {
-  /* imgSpec 如 "1agei" 或 "2ugun"，数字前缀=字宽（占多少英文字符宽） */
-  /* 严格按字宽：宽度 = 字宽单位 × 高度 */
-  var match = imgSpec.match(/^(\d+)(.+)$/);
-  if (!match) return imgSpec;
-  var widthUnits = parseInt(match[1]);
-  var h = height || '1em';
-  var hNum = parseFloat(h);
-  var hUnit = h.replace(/[\d.]/g, '') || 'em';
-  var w = (widthUnits * hNum) + hUnit;
-  return '<img src="qiang-img/' + imgSpec + '.png" class="qiang-img" style="height:' + h + ';width:' + w + ';" alt="' + match[2] + '">';
+/* ===== 羌语文本渲染 ===== */
+function renderQiangText(text, size) {
+  var s = size || '1em';
+  return '<span class="qiang-font" style="font-size:' + s + '; line-height: 1;">' + text + '</span>';
 }
 
 /* ===== 语言元数据 ===== */
@@ -4140,7 +4134,7 @@ function renderExercise() {
 
   /* ===== 羌语：看字选音（qiang-read）===== */
   if (ex.type === 'qiang-read') {
-    var imgHtml = renderQiangImg(ex.image, '64px');
+   var imgHtml = renderQiangText(ex.text, '64px');
     var audioEsc = ex.audio ? ex.audio.replace(/'/g, "\\'") : '';
     html += '<div class="qiang-letter-display" onclick="playAudio(\'' + audioEsc + '\')">' + imgHtml + '</div>';
     html += '<div class="qiang-letter-tap-hint">👆 点击字母听发音</div>';
@@ -4161,7 +4155,7 @@ function renderExercise() {
     html += '<div class="audio-replay" onclick="playAudio(\'' + laudioEsc + '\', true)"><span>🔄</span> 点击重听</div>';
     html += '<div class="qiang-choice-list">';
     ex.options.forEach(function(opt, i) {
-      var optImgHtml = renderQiangImg(opt, '36px');
+     var optTextHtml = renderQiangText(opt, '28px');
       html += '<div class="qiang-choice-card" onclick="selectQiangOption(this)" data-idx="' + i + '">';
       html += '<span class="qiang-choice-key">' + String.fromCharCode(65+i) + '</span>';
       html += '<span class="qiang-choice-img">' + optImgHtml + '</span>';
@@ -4395,7 +4389,7 @@ function checkAnswer() {
     correctText = ex.options[ex.answer];
   } else if (ex.type === 'qiang-listen') {
     isCorrect = selectedAnswer;
-    correctText = renderQiangImg(ex.options[ex.answer], '24px');
+  correctText = renderQiangText(ex.options[ex.answer], '24px');
   } else if (ex.type === 'tibetan-read' || ex.type === 'tibetan-listen') {
     isCorrect = selectedAnswer;
     correctText = ex.answer;
