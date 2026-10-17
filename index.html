@@ -2208,8 +2208,8 @@ body {
           <div class="settings-label"><span class="settings-icon">🔄</span> 重置进度</div>
           <div class="settings-value">›</div>
         </div>
-     <div class="settings-item" onclick="importLegacy()">
-  <div class="settings-label"><span class="settings-icon">📥</span> 从旧版导入进度</div>
+    <div class="settings-item" onclick="showMigrationMenu()">
+  <div class="settings-label"><span class="settings-icon">🔄</span> 数据迁移</div>
   <div class="settings-value">›</div>
 </div>
 
@@ -4737,6 +4737,117 @@ function saveProfile() {
   closePopup();
   toast('资料已更新');
 }
+/* ===== 数据迁移中心 ===== */
+function showMigrationMenu() {
+  var card = document.getElementById('popup-card');
+  var html = '';
+  html += '<div class="popup-icon">🔄</div>';
+  html += '<div class="popup-title">数据迁移</div>';
+  html += '<div class="popup-desc">你可以导出当前进度作为备份，或者在新设备/新浏览器中导入。</div>';
+  
+  html += '<div class="popup-btns">';
+  html += '<button class="duo-btn btn-blue" onclick="showExportMenu()">📤 导出当前进度</button>';
+  html += '<button class="duo-btn btn-green" onclick="importLegacy()">📥 导入历史进度</button>';
+  html += '<button class="duo-btn btn-white" onclick="closePopup()">取消</button>';
+  html += '</div>';
+
+  card.innerHTML = html;
+  document.getElementById('popup-overlay').classList.add('show');
+}
+
+/* ===== 导出进度选项 ===== */
+function showExportMenu() {
+  var raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) {
+    alert('当前没有学习数据可供导出。');
+    return;
+  }
+
+  var card = document.getElementById('popup-card');
+  var html = '';
+  html += '<div class="popup-icon">📤</div>';
+  html += '<div class="popup-title">导出当前进度</div>';
+  html += '<div class="popup-desc">请选择一种导出方式：</div>';
+
+  html += '<div class="popup-btns">';
+  html += '<button class="duo-btn btn-blue" onclick="exportDataFile()">📁 下载进度文件 (.json)</button>';
+  html += '<button class="duo-btn btn-green" onclick="exportDataCode()">📋 生成复制迁移码 (文本)</button>';
+  html += '<button class="duo-btn btn-white" onclick="showMigrationMenu()">返回</button>';
+  html += '</div>';
+
+  card.innerHTML = html;
+}
+
+/* ===== 方式 1：导出为文件 ===== */
+function exportDataFile() {
+  var raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  var blob = new Blob([raw], { type: 'application/json;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'huashuo-niwo-backup.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  closePopup();
+  toast('✅ 进度文件已下载');
+}
+
+/* ===== 方式 2：导出为迁移码文本 ===== */
+function exportDataCode() {
+  var raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  
+  var code;
+  try {
+    code = btoa(unescape(encodeURIComponent(raw)));
+  } catch(e) {
+    alert('生成迁移码失败，请改用下载文件方式。');
+    return;
+  }
+
+  var card = document.getElementById('popup-card');
+  var html = '';
+  html += '<div class="popup-icon">📋</div>';
+  html += '<div class="popup-title">复制迁移码</div>';
+  html += '<div class="popup-desc">请长按下方文本框全选并复制，保存好这段代码，在需要恢复时粘贴即可。</div>';
+  
+  html += '<textarea id="export-code-ta" readonly style="width:100%;height:120px;padding:10px;border:2px solid var(--blue);border-radius:10px;font-size:12px;font-family:monospace;resize:none;box-sizing:border-box;word-break:break-all;background:#F0F8FF;outline:none;margin-bottom:16px;">' + code + '</textarea>';
+  
+  html += '<div class="popup-btns">';
+  html += '<button class="duo-btn btn-green" onclick="copyExportCode()">复制代码</button>';
+  html += '<button class="duo-btn btn-white" onclick="showExportMenu()">返回</button>';
+  html += '</div>';
+
+  card.innerHTML = html;
+}
+
+function copyExportCode() {
+  var ta = document.getElementById('export-code-ta');
+  ta.focus();
+  ta.select();
+  ta.setSelectionRange(0, ta.value.length);
+  
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(ta.value).then(function() {
+      toast('✅ 已复制到剪贴板');
+      closePopup();
+    }).catch(function() {
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch(e) {}
+      if (ok) { toast('✅ 已复制'); closePopup(); }
+      else { alert('复制失败，请长按文本框手动全选复制。'); }
+    });
+  } else {
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch(e) {}
+    if (ok) { toast('✅ 已复制'); closePopup(); }
+    else { alert('复制失败，请长按文本框手动全选复制。'); }
+  }
+}
 
 /* ===== 从旧版导入进度（合并入口：文件 + 迁移码） ===== */
 var _pendingImport = null;
@@ -4745,7 +4856,7 @@ function importLegacy() {
   var card = document.getElementById('popup-card');
   var html = '';
   html += '<div class="popup-icon">📥</div>';
-  html += '<div class="popup-title">从旧版导入进度</div>';
+  html += '<div class="popup-title">导入学习进度</div>';
 
   html += '<div style="text-align:left;font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;margin-top:8px;">方式一 · 上传进度文件</div>';
   html += '<input type="file" id="legacy-file-input" accept=".json,application/json" style="display:none;">';
@@ -4807,7 +4918,7 @@ function handleLegacyRaw(raw) {
 
   _pendingImport = data;
   showPopup('📥', '确认导入？',
-    '将<b>覆盖</b>当前所有学习进度。<br><br>即将导入：<br>· 已完成课程：' + lessonsCount + ' 课<br>· 经验值：' + xp + '<br>· 宝石：' + gems + '<br>· 昵称：' + name,
+    '导入后将<b>覆盖</b>当前所有的学习进度，请确认。<br><br>以下数据将覆盖：<br>· 已完成课程：' + lessonsCount + ' 课<br>· 经验值：' + xp + '<br>· 宝石：' + gems + '<br>· 昵称：' + name,
     [
       { text: '确认导入', class: 'btn-green', action: 'confirmImportLegacy()' },
       { text: '取消', class: 'btn-white', action: 'closePopup()' }
