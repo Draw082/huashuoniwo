@@ -3534,10 +3534,19 @@ function renderOrderArea() {
   document.getElementById('lesson-check-btn').className = 'duo-btn ' + (full ? 'btn-green' : 'btn-gray') + ' footer-btn';
 }
 
-/* ===== 羌语文本渲染 ===== */
+/* ===== 羌语文本渲染（自动识别【】，只对内部文字应用字体） ===== */
 function renderQiangText(text, size) {
   var s = size || '1em';
-  return '<span class="qiang-font" style="font-size:' + s + '; line-height: 1;">' + text + '</span>';
+  var str = String(text);
+  var fontStyle = 'font-family: \'QiangFont\', sans-serif !important; font-size:' + s + '; line-height: 1; font-feature-settings: \'liga\' 1, \'calt\' 1;';
+  
+  // 如果字符串里包含【】，提取里面的内容并应用字体，隐藏【】本身
+  if (str.indexOf('【') !== -1 && str.indexOf('】') !== -1) {
+    return str.replace(/【(.*?)】/g, '<span style="' + fontStyle + '">$1</span>');
+  }
+  
+  // 如果没有【】，把整个字符串应用羌文字体
+  return '<span style="' + fontStyle + '">' + str + '</span>';
 }
 
 /* ===== 语言元数据 ===== */
@@ -4139,10 +4148,11 @@ function renderExercise() {
     html += '<div class="qiang-letter-display" onclick="playAudio(\'' + audioEsc + '\')">' + imgHtml + '</div>';
     html += '<div class="qiang-letter-tap-hint">👆 点击字母听发音</div>';
     html += '<div class="qiang-choice-list">';
-    ex.options.forEach(function(opt, i) {
+       ex.options.forEach(function(opt, i) {
+      var optTextHtml = renderQiangText(opt, '28px');
       html += '<div class="qiang-choice-card" onclick="selectQiangOption(this)" data-idx="' + i + '">';
       html += '<span class="qiang-choice-key">' + String.fromCharCode(65+i) + '</span>';
-      html += '<span class="qiang-choice-text">' + opt + '</span>';
+      html += '<span class="qiang-choice-img">' + optTextHtml + '</span>';
       html += '</div>';
     });
     html += '</div>';
