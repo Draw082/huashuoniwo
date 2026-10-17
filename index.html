@@ -3463,6 +3463,20 @@ function playAudio(text, force) {
     console.warn('音频加载失败:', src, err);
   });
 }
+/* ===== 字母表专用播放：音频缺失时提示，不崩溃 ===== */
+function playLetterAudio(audioName) {
+  if (!audioName) { toast('🔇 该字母发音正在录制中'); return; }
+  if (currentAudio) { try { currentAudio.pause(); } catch(e){} }
+  var src = encodeURI('audio/' + audioName + '.m4a');
+  var a = new Audio(src);
+  currentAudio = a;
+  a.onerror = function() {
+    toast('🔇 该字母发音正在录制中');
+  };
+  a.play().catch(function() {
+    /* onerror 已经提示过了，这里不再重复 */
+  });
+}
 
 /* ===== 工具：数组随机打乱 ===== */
 function shuffleArr(arr) {
@@ -3783,13 +3797,30 @@ function addLang(langId) {
   toast('已添加' + LANGS[langId].name);
 }
 
-/* ===== 羌语字母表 ===== */
 var qiangAlphabet = {
   vowels: [
-    /* {img:'1a', name:'a'}, {img:'2e', name:'e'}, {img:'2u', name:'u'} ... 待补充 */
+    { text:'঍', name:'a',    audio:'amark' },
+    { text:'঴', name:'ae',   audio:'emae' },
+    { text:'঳', name:'ea',   audio:'eme' },
+    { text:'঩', name:'u',    audio:'ugun' },
+    { text:'঑', name:'e',    audio:'egen' },
+    { text:'[?nn?]', name:'nn（字符待补充）', audio:'nn-qiang' },
+    { text:'঒', name:'i',    audio:'i-qiang' },
+    { text:'঱', name:'ü',    audio:'yu' },
+    { text:'঎', name:'o',    audio:'o-qiang' },
+    { text:'঄', name:'a',    audio:'a-qiang' },
+    { text:'৵', name:'r',    audio:'r-qiang' }
   ],
   consonants: [
-    /* {img:'1t', name:'t'} ... 待补充 */
+    { text:'঻', name:'b',    audio:'b-q' },
+    { text:'৅', name:'p',    audio:'p-q' },
+    { text:'৆', name:'bb',   audio:'bb-q' },
+    { text:'৉', name:'m',    audio:'m-q' },
+    { text:'৊', name:'f',    audio:'f-q' },
+    { text:'৏', name:'w',    audio:'w-q' },
+    { text:'[?wf?]', name:'wf（字符待补充）', audio:'w-f' },
+    { text:'৐', name:'d',    audio:'d-q' },
+    { text:'৑', name:'t',    audio:'t-q' }
   ]
 };
 
@@ -3834,9 +3865,9 @@ function renderAlphabet() {
     html += '<div class="alphabet-section-title">元音</div>';
     if (qiangAlphabet.vowels.length > 0) {
       html += '<div class="alphabet-grid">';
-      qiangAlphabet.vowels.forEach(function(v) {
-        html += '<div class="alphabet-cell">';
-        html += '<div class="alphabet-cell-letter">' + renderQiangImg(v.img, '28px') + '</div>';
+           qiangAlphabet.vowels.forEach(function(v) {
+        html += '<div class="alphabet-cell" onclick="playLetterAudio(\'' + v.audio + '\')">';
+        html += '<div class="alphabet-cell-letter">' + renderQiangText(v.text, '28px') + '</div>';
         html += '<div class="alphabet-cell-name">' + v.name + '</div>';
         html += '</div>';
       });
@@ -3850,9 +3881,9 @@ function renderAlphabet() {
     html += '<div class="alphabet-section-title">辅音</div>';
     if (qiangAlphabet.consonants.length > 0) {
       html += '<div class="alphabet-grid">';
-      qiangAlphabet.consonants.forEach(function(c) {
-        html += '<div class="alphabet-cell">';
-        html += '<div class="alphabet-cell-letter">' + renderQiangImg(c.img, '28px') + '</div>';
+          qiangAlphabet.consonants.forEach(function(c) {
+        html += '<div class="alphabet-cell" onclick="playLetterAudio(\'' + c.audio + '\')">';
+        html += '<div class="alphabet-cell-letter">' + renderQiangText(c.text, '28px') + '</div>';
         html += '<div class="alphabet-cell-name">' + c.name + '</div>';
         html += '</div>';
       });
