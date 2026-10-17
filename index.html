@@ -3538,7 +3538,7 @@ function renderOrderArea() {
 function renderQiangText(text, size) {
   var s = size || '1em';
   var str = String(text);
-  var fontStyle = 'font-family: \'QiangFont\', sans-serif !important; font-size:' + s + '; line-height: 1; font-feature-settings: \'liga\' 1, \'calt\' 1;';
+  var fontStyle = 'font-family: \'QiangFont\', var(--font-main) !important; font-size:' + s + '; line-height: 1; font-feature-settings: \'liga\' 1, \'calt\' 1;';
   
   // 如果字符串里包含【】，提取里面的内容并应用字体，隐藏【】本身
   if (str.indexOf('【') !== -1 && str.indexOf('】') !== -1) {
