@@ -2417,6 +2417,7 @@ function initConverters() {
       /* 先强制替换特定字，防止 OpenCC 一对多误判 */
       var r = text;
       r = r.replace(/着/g, '著');           /* 着→著：一律 */
+      r = r.replace(/仉/g, '僟');    /* 仉→僟 */
       r = r.replace(/龙卷风/g, '龍捲風');    /* 卷→捲 */
       r = r.replace(/歇困/g, '歇睏');        /* 困→睏 */
       r = r.replace(/代志/g, '代誌');        /* 志→誌 */
@@ -3287,7 +3288,7 @@ hints:[{word:'市里*儿', meaning:'定州城区'},{word:'哩',meaning:'的'}],
     title: '亲戚',
     chapter: '第四章 赴会',
     icon: '👨‍👩‍👧',
-    intro: '⚠️ 本课音频尚未录制上传，建议等待音频上传后再进行学习。\n\n学习定州话中的亲属称谓与家庭关系表达：伯伯、娘、闺妮、小舅儿，以及“寻”“坐席”“哨闲篇儿”等特色说法。',
+    intro: '学习定州话中的亲属称谓与家庭关系表达：伯伯、娘、闺妮、小舅儿，以及“寻”“坐席”“哨闲篇儿”等特色说法。',
     exercises: [
       { type:'translation', sentence:'伯伯、娘', sentenceAudio:'伯伯娘',
         hints:[{word:'伯伯',meaning:'伯父'},{word:'娘',meaning:'伯母'}],
@@ -3345,7 +3346,7 @@ hints:[{word:'市里*儿', meaning:'定州城区'},{word:'哩',meaning:'的'}],
     title: '婚宴',
     chapter: '第四章 赴会',
     icon: '🍽️',
-    intro: '⚠️ 本课音频尚未录制上传，建议等待音频上传后再进行学习。\n\n婚宴场景用语：锁钱儿、坐席、八大碗儿、长寿面，以及“仉”“嘫”“焉”等疑问表达。',
+    intro: '婚宴场景用语：锁钱儿、坐席、八大碗儿、长寿面，以及“仉”“嘫”“焉”等疑问表达。',
     exercises: [
       { type:'translation', sentence:'老张给哩你家多少锁钱*儿*嘫？', sentenceAudio:'老张给哩你家多少锁钱儿嘫',
         hints:[{word:'给',meaning:'给'},{word:'哩',meaning:'了 / 的 / 到'},{word:'你家',meaning:'你家 / 您'},{word:'锁钱*儿*',meaning:'十二生日前的份子钱'}],
@@ -3403,7 +3404,7 @@ hints:[{word:'市里*儿', meaning:'定州城区'},{word:'哩',meaning:'的'}],
     title: '丧事',
     chapter: '第四章 赴会',
     icon: '🕯️',
-    intro: '⚠️ 本课音频尚未录制上传，建议等待音频上传后再进行学习。\n\n丧事场景用语：发丧、死人席、熬菜、干粉菜，以及“搲”“仉子”“更一哩”等说法。',
+    intro: '丧事场景用语：发丧、死人席、熬菜、干粉菜，以及“搲”“仉子”“更一哩”等说法。',
     exercises: [
       { type:'translation', sentence:'外头放炮哩，敢死人唡。', sentenceAudio:'外头放炮哩敢死人唡',
         hints:[{word:'外头',meaning:'外面'},{word:'哩',meaning:'在 / 呢'},{word:'敢',meaning:'可能'}],
@@ -3466,7 +3467,7 @@ hints:[{word:'市里*儿', meaning:'定州城区'},{word:'哩',meaning:'的'}],
     title: '待客',
     chapter: '第四章 赴会',
     icon: '🍵',
-    intro: '⚠️ 本课音频尚未录制上传，建议等待音频上传后再进行学习。\n\n待客场景用语：待客、捏饺子、焖子、牙签儿肉，以及“甭应觉孽”“丢下”等表达。',
+    intro: '待客场景用语：待客、捏饺子、焖子、牙签儿肉，以及“甭应觉孽”“丢下”等表达。',
     exercises: [
       { type:'translation', sentence:'明个*儿*待客呀。', sentenceAudio:'明个儿待客呀',
         hints:[{word:'明个*儿*',meaning:'明天'},{word:'待客',meaning:'待客 / 请宴'},{word:'呀',meaning:'将要'}],
@@ -3529,7 +3530,7 @@ hints:[{word:'市里*儿', meaning:'定州城区'},{word:'哩',meaning:'的'}],
     title: '庙会',
     chapter: '第四章 赴会',
     icon: '🏮',
-    intro: '⚠️ 本课音频尚未录制上传，建议等待音频上传后再进行学习。\n\n庙会场景用语：上庙、玩意儿的价钱、磕着额颅盖儿，以及“蠽蟟儿”“促织儿”“老猴”等虫名。',
+    intro: '庙会场景用语：上庙、玩意儿的价钱、磕着额颅盖儿，以及“蠽蟟儿”“促织儿”“老猴”等虫名。',
     exercises: [
       { type:'translation', sentence:'我不使脏哩，给我拿双新箸子来。', sentenceAudio:'我不使脏哩给我拿双新箸子来',
         hints:[{word:'使',meaning:'用 / 累'},{word:'新',meaning:'干净的 / 新的'},{word:'箸子',meaning:'筷子'},{word:'来',meaning:'来 / 过来'}],
@@ -3586,7 +3587,7 @@ hints:[{word:'市里*儿', meaning:'定州城区'},{word:'哩',meaning:'的'}],
     title: '巩固练习',
     chapter: '第四章 赴会',
     icon: '📝',
-    intro: '⚠️ 本课音频尚未录制上传，建议等待音频上传后再进行学习。\n\n第四章综合巩固：亲属、婚宴、丧事、待客、庙会五课的词汇与句式复习。',
+    intro: '第四章综合巩固：亲属、婚宴、丧事、待客、庙会五课的词汇与句式复习。',
     exercises: [
       { type:'translation', sentence:'叔叔，你给我爹小几岁耶？', sentenceAudio:'叔叔你给我爹小几岁耶',
         hints:[{word:'叔叔',meaning:'叔叔'},{word:'给',meaning:'比'},{word:'爹',meaning:'爸爸 / 父亲'},{word:'耶',meaning:'呢 / 呀'}],
