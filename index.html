@@ -7,20 +7,10 @@
      Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>话说你我</title>
-<link rel="preload" href="https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Tshyn-P0.ttf"  as="font" type="font/ttf" crossorigin>
-<link rel="preload" href="https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Tshyn-P1.ttf"  as="font" type="font/ttf" crossorigin>
-<link rel="preload" href="https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Tshyn-P2.ttf"  as="font" type="font/ttf" crossorigin>
-<link rel="preload" href="https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Tshyn-P16.ttf" as="font" type="font/ttf" crossorigin>
 
 <style>
 /* ===== TH 字体（全部完整字体文件，严禁剪字/回退系统字体）===== */
-@font-face { font-family: 'TH-Tshyn-P0';  src: url('https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Tshyn-P0.ttf')  format('truetype'); font-display: block; }
-@font-face { font-family: 'TH-Tshyn-P1';  src: url('https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Tshyn-P1.ttf')  format('truetype'); font-display: block; }
-@font-face { font-family: 'TH-Tshyn-P2';  src: url('https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Tshyn-P2.ttf')  format('truetype'); font-display: block; }
-@font-face { font-family: 'TH-Tshyn-P16'; src: url('https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Tshyn-P16.ttf') format('truetype'); font-display: block; }
-@font-face { font-family: 'TH-Times';     src: url('https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/TH-Times.ttc')    format('truetype'); font-display: swap; }
- /* ===== 羌文字体 ===== */
-@font-face { font-family: 'QiangFont'; src: url('https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/v-hlhu-Regular.otf') format('opentype'); font-display: block; }
+/* ===== 字体 @font-face 由 JS 根据用户 IP 动态注入（中国内地→腾讯云 COS；港澳台及海外→本地 font/ 目录）===== */
 
 /* ===== 彩色 Emoji 字体（仅 emoji 码位生效：unicode-range 限定，汉字/拉丁/藏文/箭头符号仍走 TH 字体栈）===== */
 @font-face {
@@ -3882,6 +3872,65 @@ function playLetterAudio(audioName) {
   });
 }
 
+/* ===== 根据用户 IP 选择字体源：中国大陆→COS，港澳台及海外→本地 font/ 目录 ===== */
+function detectFontSource() {
+  /* 返回 Promise<'cos' | 'github'>；3 秒内都没检测出来则默认 'cos'（国内） */
+  return new Promise(function(resolve) {
+    var done = false;
+    var timer = setTimeout(function() {
+      if (done) return;
+      done = true;
+      resolve('cos');
+    }, 3000);
+
+    function finish(result) {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      resolve(result);
+    }
+
+    function handleCode(code) {
+      if (!code) return;
+      code = String(code).trim().toUpperCase();
+      if (!/^[A-Z]{2}$/.test(code)) return;
+      finish(code === 'CN' ? 'cos' : 'github');
+    }
+
+    /* 两个 API 同时请求，谁先回用谁 */
+    fetch('https://ipapi.co/country_code/', { cache: 'no-store' })
+      .then(function(r) { return r.text(); })
+      .then(handleCode)
+      .catch(function() { /* ignore */ });
+
+    fetch('https://ipwho.is/', { cache: 'no-store' })
+      .then(function(r) { return r.json(); })
+      .then(function(d) { handleCode(d && d.country_code); })
+      .catch(function() { /* ignore */ });
+  });
+}
+
+/* 注入 @font-face（source: 'cos' 或 'github'） */
+function injectFontFaces(source) {
+  if (document.getElementById('dynamic-font-faces')) return;
+  var base = (source === 'github')
+    ? 'font/'   /* 海外/港澳台：站内相对路径 font/ 目录 */
+    : 'https://fonts4speak-1509099110.cos.ap-beijing.myqcloud.com/';
+
+  var css =
+    "@font-face { font-family: 'TH-Tshyn-P0';  src: url('" + base + "TH-Tshyn-P0.ttf')  format('truetype'); font-display: block; }" +
+    "@font-face { font-family: 'TH-Tshyn-P1';  src: url('" + base + "TH-Tshyn-P1.ttf')  format('truetype'); font-display: block; }" +
+    "@font-face { font-family: 'TH-Tshyn-P2';  src: url('" + base + "TH-Tshyn-P2.ttf')  format('truetype'); font-display: block; }" +
+    "@font-face { font-family: 'TH-Tshyn-P16'; src: url('" + base + "TH-Tshyn-P16.ttf') format('truetype'); font-display: block; }" +
+    "@font-face { font-family: 'TH-Times';     src: url('" + base + "TH-Times.ttc')    format('truetype'); font-display: swap; }" +
+    "@font-face { font-family: 'QiangFont';    src: url('" + base + "v-hlhu-Regular.otf') format('opentype'); font-display: block; }";
+
+  var style = document.createElement('style');
+  style.id = 'dynamic-font-faces';
+  style.textContent = css;
+  document.head.appendChild(style);
+}
+
 /* ===== 工具：数组随机打乱 ===== */
 function shuffleArr(arr) {
   var a = arr.slice();
@@ -5660,28 +5709,30 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  var fontReady;
-  if (document.fonts && document.fonts.load) {
-    setWelcomeProgress(0);
-    fontReady = Promise.all(fontNames.map(function(n) { return loadOne(n, 0); }))
-      .then(function() {
-        setWelcomeProgress(100);
-        updateStatus('课程已就绪');
-        console.log('[字体] ✅ 全部加载成功');
-      })
-      .catch(function(err) {
-        updateStatus('字体加载失败');
-        var el = document.getElementById('welcome-status');
-        if (el) {
-          el.innerHTML = '字体加载失败，请检查网络后重试<br>' +
-            '<button onclick="location.reload()" style="margin-top:16px;padding:10px 30px;border:none;border-radius:12px;background:#fff;color:#58CC02;font-weight:700;font-size:16px;cursor:pointer;font-family:sans-serif;">重试</button>';
-        }
-        console.error('[字体] ❌ 加载失败:', err);
-        throw err;
-      });
-  } else {
-    fontReady = Promise.resolve();
-  }
+  var fontReady = detectFontSource().then(function(source) {
+    injectFontFaces(source);
+    console.log('[字体] 源: ' + source);
+    if (document.fonts && document.fonts.load) {
+      setWelcomeProgress(0);
+      return Promise.all(fontNames.map(function(n) { return loadOne(n, 0); }))
+        .then(function() {
+          setWelcomeProgress(100);
+          updateStatus('课程已就绪');
+          console.log('[字体] ✅ 全部加载成功');
+        })
+        .catch(function(err) {
+          updateStatus('字体加载失败');
+          var el = document.getElementById('welcome-status');
+          if (el) {
+            el.innerHTML = '字体加载失败，请检查网络后重试<br>' +
+              '<button onclick="location.reload()" style="margin-top:16px;padding:10px 30px;border:none;border-radius:12px;background:#fff;color:#58CC02;font-weight:700;font-size:16px;cursor:pointer;font-family:sans-serif;">重试</button>';
+          }
+          console.error('[字体] ❌ 加载失败:', err);
+          throw err;
+        });
+    }
+    return Promise.resolve();
+  });
 
   fontReady.then(function() {
     var elapsed = Date.now() - welcomeStart;
